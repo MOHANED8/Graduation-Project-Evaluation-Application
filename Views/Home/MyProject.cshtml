@@ -1,0 +1,36 @@
+﻿@{
+    ViewData["Title"] = "My Project";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var project = ViewBag.Project;
+    var file = ViewBag.File;
+    var presentationDate = ViewBag.PresentationDate as string;
+}
+
+<h2 class="mt-4 text-center">My Approved Project</h2>
+
+@if (project == null)
+{
+    <div class="alert alert-warning text-center">No project has been assigned yet.</div>
+}
+else
+{
+    <div class="container mt-3">
+        <div class="card p-3">
+            <h4>Project Title: @project.Title</h4>
+            <p><strong>Professor:</strong> @project.Professor</p>
+            <p><strong>Presentation Date:</strong> @presentationDate</p>
+
+            @if (file != null)
+            {
+                <hr />
+                <h5>Uploaded Project File:</h5>
+                <p><strong>Description:</strong> @file["Description"]</p>
+                <a href="@file["FileUrl"]" class="btn btn-sm btn-outline-primary" target="_blank">📄 Download</a>
+            }
+            else
+            {
+                <p class="text-muted">No project file uploaded yet.</p>
+            }
+        </div>
+    </div>
+}

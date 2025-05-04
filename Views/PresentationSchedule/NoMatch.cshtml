@@ -1,0 +1,21 @@
+﻿@{
+    ViewData["Title"] = "No Match Found";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container mt-5 pt-4">
+    <h2 class="text-danger">No Matching Date Found</h2>
+    <p>
+        No match date with the student. Click the button below to notify the student via email.
+    </p>
+
+    <a href="@ViewBag.MailtoLink" class="btn btn-primary" target="_self">
+        ✉️ Send Mail
+    </a>
+
+    <a href="@Url.Action("Index", "PresentationSchedule")" class="btn btn-secondary mt-2">
+        🔙 Back
+    </a>
+</div>
+
+

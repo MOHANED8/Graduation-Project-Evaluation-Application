@@ -1,0 +1,30 @@
+@model List<SoftwareProject.Models.ProjectModel>
+
+<h2>Manage Projects</h2>
+
+@foreach (var project in Model)
+{
+    <div class="card mt-4">
+        <div class="card-body">
+            <h5>@project.Title</h5>
+            <p>@project.Description</p>
+            <p><strong>Slots:</strong> @project.Enrolled.Count / @project.TotalSlots</p>
+
+            <form asp-action="DeleteProject" method="post">
+                <input type="hidden" name="projectId" value="@project.Id" />
+                <button class="btn btn-danger">Delete Project</button>
+            </form>
+
+            <h6>Enrolled Students:</h6>
+            @foreach (var student in project.Enrolled)
+            {
+                <form asp-action="RemoveStudent" method="post" class="d-flex align-items-center">
+                    <input type="hidden" name="projectId" value="@project.Id" />
+                    <input type="hidden" name="studentId" value="@student" />
+                    <span class="me-2">@student</span>
+                    <button class="btn btn-sm btn-outline-danger">Remove</button>
+                </form>
+            }
+        </div>
+    </div>
+}

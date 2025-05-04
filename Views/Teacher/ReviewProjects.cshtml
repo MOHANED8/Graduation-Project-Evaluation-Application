@@ -1,0 +1,37 @@
+@{
+    ViewData["Title"] = "Review Projects";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var reviews = ViewBag.Reviews as List<dynamic>;
+}
+
+<h2 class="mt-4 text-center">Review Student Projects</h2>
+
+<div class="container mt-3">
+    @if (reviews.Count == 0)
+    {
+        <div class="alert alert-warning">No student uploads found.</div>
+    }
+    else
+    {
+        foreach (var item in reviews)
+        {
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">@item.Title</h5>
+                    <p><strong>Student ID:</strong> @item.StudentId</p>
+                    <p><strong>Description:</strong> @item.Description</p>
+                    <p>
+                        <a class="btn btn-sm btn-outline-primary" href="@item.FileUrl" target="_blank">View File</a>
+                    </p>
+
+                    <form method="post" asp-action="SubmitReview" asp-controller="Teacher">
+                        <input type="hidden" name="studentId" value="@item.StudentId" />
+                        <input type="hidden" name="professorEmail" value="@item.ProfessorEmail" />
+                        <textarea name="feedback" rows="3" class="form-control mb-2" placeholder="Write feedback..."></textarea>
+                        <button type="submit" class="btn btn-success btn-sm">Submit Feedback</button>
+                    </form>
+                </div>
+            </div>
+        }
+    }
+</div>

@@ -1,0 +1,71 @@
+﻿@{
+    ViewData["Title"] = "Upload Project";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var projectTitle = ViewBag.ProjectTitle as string;
+    var professorEmail = ViewBag.ProfessorEmail as string;
+    var username = ViewBag.Username as string;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewData["Title"]</title>
+    <link rel="stylesheet" href="~/css/File.css" />
+</head>
+<body>
+    <div class="Filecontainer">
+        <h2>Upload Project</h2>
+
+        @if (projectTitle == null || professorEmail == null)
+        {
+            <div class="alert alert-danger">
+                ❌ You are not eligible to upload a project. Please enroll in a project first.
+            </div>
+        }
+        else
+        {
+            <form asp-controller="Home" asp-action="Upload" method="post" enctype="multipart/form-data">
+                <div class="form-group">
+                    <label for="title">Project Title:</label>
+                    <input name="title" class="form-control" value="@projectTitle" readonly />
+                </div>
+
+                <div class="form-group">
+                    <label for="student">Student ID:</label>
+                    <input name="student" class="form-control" value="@username" readonly />
+                </div>
+
+                <div class="form-group">
+                    <label for="professor">Counselor Professor:</label>
+                    <input name="professor" class="form-control" value="@professorEmail" readonly />
+                </div>
+
+                <div class="form-group">
+                    <label for="description">Description:</label>
+                    <textarea name="description" class="form-control" rows="4"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="file">Upload File:</label>
+                    <input name="file" class="form-control" type="file"  />
+                </div>
+
+                <button type="submit" class="btn btn-primary">Submit</button>
+            </form>
+        }
+    </div>
+
+    @if (TempData["UploadSuccess"]?.ToString() == "true")
+    {
+        <script>
+            window.onload = function () {
+                if (confirm("✅ Your project has been uploaded successfully!\nClick OK to go to Home page.")) {
+                    window.location.href = "/Home/Index";
+                }
+            }
+        </script>
+    }
+</body>
+</html>

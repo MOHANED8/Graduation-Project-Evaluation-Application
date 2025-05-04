@@ -1,0 +1,115 @@
+@model List<SoftwareProject.Models.ProjectModel>
+
+@{
+    ViewData["Title"] = "Manage Projects";
+}
+
+<!-- Flash Messages -->
+<div class="container mt-5 pt-5">
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger text-center fw-bold shadow-sm">
+            @TempData["Error"]
+        </div>
+    }
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success text-center fw-bold shadow-sm">
+            @TempData["Success"]
+        </div>
+    }
+</div>
+
+
+<!-- Styling -->
+<style>
+    .card-title-custom {
+        font-size: 1.6rem;
+        font-weight: bold;
+    }
+
+    .section-title {
+        font-size: 1.2rem;
+        font-weight: bold;
+        margin-bottom: 10px;
+    }
+</style>
+
+<!-- Main Content -->
+<div class="container mt-5 pt-4">
+    @foreach (var project in Model)
+    {
+        <div class="card mb-5 shadow-sm border-0">
+            <div class="card-header bg-dark text-white">
+                <h4 class="card-title-custom mb-0">@project.Title</h4>
+            </div>
+            <div class="card-body">
+                <!-- Edit Project Form -->
+                <form method="post" asp-action="EditProject" class="mb-4">
+                    <input type="hidden" name="projectId" value="@project.Id" />
+                    <div class="mb-3">
+                        <label class="form-label">Description:</label>
+                        <textarea class="form-control" name="newDescription" rows="3">@project.Description</textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Total Slots:</label>
+                        <input type="number" class="form-control" name="newSlots" value="@project.TotalSlots" min="1" />
+                    </div>
+                    <button type="submit" class="btn btn-primary">Update Project</button>
+                </form>
+
+                <div class="row">
+                    <!-- Requested Students -->
+                    <div class="col-md-6">
+                        <div class="section-title text-danger">Requested Students</div>
+                        @if (project.Requested.Except(project.Enrolled).Any())
+                        {
+                            <ul class="list-group">
+                                @foreach (var student in project.Requested.Except(project.Enrolled))
+                                {
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        <span>@student</span>
+                                        <div>
+                                            <form method="post" asp-action="ApproveStudent" class="d-inline">
+                                                <input type="hidden" name="projectId" value="@project.Id" />
+                                                <input type="hidden" name="studentId" value="@student" />
+                                                <button type="submit" class="btn btn-success btn-sm">Approve</button>
+                                            </form>
+                                            <form method="post" asp-action="RejectStudent" class="d-inline">
+                                                <input type="hidden" name="projectId" value="@project.Id" />
+                                                <input type="hidden" name="studentId" value="@student" />
+                                                <button type="submit" class="btn btn-outline-danger btn-sm">Reject</button>
+                                            </form>
+                                        </div>
+                                    </li>
+                                }
+                            </ul>
+                        }
+                        else
+                        {
+                            <p class="text-muted fst-italic">No student requests yet.</p>
+                        }
+                    </div>
+
+                    <!-- Enrolled Students -->
+                    <div class="col-md-6">
+                        <div class="section-title text-success">Enrolled Students</div>
+                        @if (project.Enrolled.Any())
+                        {
+                            <ul class="list-group">
+                                @foreach (var student in project.Enrolled)
+                                {
+                                    <li class="list-group-item">@student</li>
+                                }
+                            </ul>
+                        }
+                        else
+                        {
+                            <p class="text-muted fst-italic">No students enrolled.</p>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>

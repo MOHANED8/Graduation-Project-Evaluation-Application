@@ -1,0 +1,171 @@
+﻿@{
+    ViewData["Title"] = "Home";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IKU Evaluation System</title>
+    <style>
+        :root {
+            --red: #e74c3c;
+            --cyan: #1abc9c;
+            --orange: #f39c12;
+            --blue: #3498db;
+            --purple: #9b59b6;
+            --dark: #2c3e50;
+            --gray: #95a5a6;
+            --light: #ecf0f1;
+            --black: #000000;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f7fa;
+            margin: 0;
+            padding: 0;
+        }
+
+        .dashboard-container {
+            max-width: 1200px;
+            margin: 60px auto 0;
+            padding: 40px 20px;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 25px;
+            margin-top: 30px;
+        }
+
+        .dashboard-box {
+            background: white;
+            border-radius: 8px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            transition: all 0.3s ease;
+            min-height: 200px;
+            display: flex;
+            flex-direction: column;
+            cursor: pointer; /* Add pointer cursor */
+        }
+
+            .dashboard-box:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            }
+
+            .dashboard-box h2 {
+                margin: 0 0 15px 0;
+                color: var(--dark);
+                font-size: 1.3rem;
+            }
+
+            .dashboard-box p {
+                color: var(--gray);
+                margin: 0;
+                flex-grow: 1;
+            }
+
+            .dashboard-box .icon {
+                align-self: flex-end;
+                margin-top: 20px;
+                width: 40px;
+                height: 40px;
+            }
+
+        /* Box specific colors */
+        .box-1 {
+            border-top: 4px solid var(--red);
+        }
+
+        .box-2 {
+            border-top: 4px solid var(--cyan);
+        }
+
+        .box-3 {
+            border-top: 4px solid var(--blue);
+        }
+
+        .box-4 {
+            border-top: 4px solid var(--orange);
+        }
+
+        .box-5 {
+            border-top: 4px solid var(--purple);
+        }
+
+        .box-6 {
+            border-top: 4px solid var(--black);
+        }
+
+        /* Make entire box clickable */
+        .clickable-box {
+            display: contents;
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <div class="dashboard-grid">
+            <!-- Box 1 -->
+            <a href="@Url.Action("Index", "Calendar")" class="clickable-box">
+                <div class="dashboard-box box-1">
+                    <h2>Calendar</h2>
+                    <p>You can assign your available time here.</p>
+                    <img src="~/Photo/calendar.svg" class="icon" alt="Calendar">
+                </div>
+            </a>
+
+
+            <!-- Box 2 -->
+            <a href="@Url.Action("Results", "Home")" class="clickable-box">
+                <div class="dashboard-box box-2">
+                    <h2>My Results</h2>
+                    <p>You can view your results on this page.</p>
+                    <img src="~/Photo/results.svg" class="icon" alt="Results">
+                </div>
+            </a>
+
+            <!-- Box 3 -->
+            <a href="@Url.Action("File", "Home")" class="clickable-box">
+                <div class="dashboard-box box-3">
+                    <h2>Upload File</h2>
+                    <p>Students can upload their reports to the system from here.</p>
+                    <img src="~/Photo/upload.svg" class="icon" alt="Upload">
+                </div>
+            </a>
+
+            <!-- Box 4 -->
+            <a href="@Url.Action("NecessaryDocument", "Home")" class="clickable-box">
+                <div class="dashboard-box box-4">
+                    <h2>Necessary Documents</h2>
+                    <p>Students can view the required documents here.</p>
+                    <img src="~/Photo/documents.svg" class="icon" alt="Documents">
+                </div>
+            </a>
+
+            <!-- Box 5 -->
+            <a href="@Url.Action("MyProject", "Home")" class="clickable-box">
+                <div class="dashboard-box box-5">
+                    <h2>My Project</h2>
+                    <p>Students can view the required documents here.</p>
+                    <img src="~/Photo/manage.svg" class="icon" alt="Documents">
+                </div>
+            </a>
+
+            <!-- Box 6 -->
+            <a href="@Url.Action("Index", "Project")" class="clickable-box">
+                <div class="dashboard-box box-6">
+                    <h2>Project List</h2>
+                    <p>Students can view and enroll in available projects here.</p>
+                    <img src="~/Photo/project.svg" class="icon" alt="Projects">
+                </div>
+            </a>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,82 @@
+﻿@{
+    ViewData["Title"] = "Calendar";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var userId = ViewBag.UserId as string;
+    var role = ViewBag.Role as string;
+    var existingDates = ViewBag.ExistingDates as List<string> ?? new List<string>();
+}
+
+<h2 class="text-center mt-4">Select Available Dates</h2>
+
+<div class="container mt-3">
+    <p><strong>Role:</strong> @role | <strong>ID:</strong> @userId</p>
+
+    <input type="date" id="datePicker" class="form-control mb-2" />
+    <button id="addDateBtn" class="btn btn-sm btn-primary mb-3">Add Date</button>
+
+    <h4>Your Available Dates:</h4>
+    <ul id="selectedDates" class="list-group">
+        @foreach (var date in existingDates)
+        {
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                @date
+                <button class="btn btn-sm btn-danger" onclick="removeDate('@date')">Remove</button>
+            </li>
+        }
+    </ul>
+
+    <button id="saveBtn" class="btn btn-success mt-3">Save Availability</button>
+</div>
+
+@section Scripts {
+    <script>
+        const existingDates = new Set(@Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(existingDates)));
+
+        document.getElementById("addDateBtn").addEventListener("click", function () {
+            const date = document.getElementById("datePicker").value;
+            if (!date || existingDates.has(date)) return;
+
+            existingDates.add(date);
+
+            const li = document.createElement("li");
+            li.className = "list-group-item d-flex justify-content-between align-items-center";
+            li.innerHTML = `
+                ${date}
+                <button class="btn btn-sm btn-danger" onclick="removeDate('${date}')">Remove</button>
+            `;
+            document.getElementById("selectedDates").appendChild(li);
+        });
+
+        document.getElementById("saveBtn").addEventListener("click", async function () {
+            const dates = Array.from(existingDates);
+            const res = await fetch("/Calendar/SaveDates", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(dates)
+            });
+
+            if (res.ok) {
+                const json = await res.json();
+                if (json.success) alert("✅ Dates saved successfully!");
+                else alert("❌ Server responded but didn't confirm success.");
+            } else {
+                alert("❌ Failed to save dates.");
+            }
+        });
+
+        function removeDate(dateToRemove) {
+            if (!confirm(`Are you sure you want to remove ${dateToRemove}?`)) return;
+
+            fetch('/Calendar/RemoveDate', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(dateToRemove)
+            }).then(() => {
+                alert("Removed successfully!");
+                location.reload();
+            });
+        }
+    </script>
+}

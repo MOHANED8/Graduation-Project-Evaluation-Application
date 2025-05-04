@@ -1,0 +1,60 @@
+@model List<SoftwareProject.Models.ProjectModel>
+@{
+    ViewData["Title"] = "Project List";
+    var studentId = ViewBag.StudentId as string;
+    bool isAlreadyEnrolled = ViewBag.IsAlreadyEnrolled ?? false;
+}
+
+<div class="container mt-5 pt-4">
+    <!-- FIXED: Margin-top to avoid overlap -->
+    <h2 class="text-center mb-4">Available Projects</h2>
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger">@TempData["Error"]</div>
+    }
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success">@TempData["Success"]</div>
+    }
+
+    <div class="row">
+        @foreach (var project in Model)
+        {
+            <div class="col-md-4 mb-4">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body">
+                        <h5 class="card-title">@project.Title</h5>
+                        <p class="card-text">@project.Description</p>
+                        <p><strong>Professor:</strong> @project.ProfessorEmail</p>
+                        <p><strong>Slots:</strong> @project.Enrolled.Count / @project.TotalSlots</p>
+
+                        @if (project.Enrolled.Contains(studentId))
+                        {
+                            <span class="badge bg-success">You are enrolled</span>
+                        }
+                        else if (project.Requested.Contains(studentId))
+                        {
+                            <span class="badge bg-warning text-dark">Request Sent</span>
+                        }
+                        else if (isAlreadyEnrolled)
+                        {
+                            <span class="badge bg-secondary">Already enrolled in another project</span>
+                        }
+                        else if (project.Enrolled.Count >= project.TotalSlots)
+                        {
+                            <span class="badge bg-danger">No available slots</span>
+                        }
+                        else
+                        {
+                            <form asp-action="Apply" asp-controller="Project" method="post">
+                                <input type="hidden" name="projectId" value="@project.Id" />
+                                <button class="btn btn-primary" type="submit">Apply</button>
+                            </form>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>

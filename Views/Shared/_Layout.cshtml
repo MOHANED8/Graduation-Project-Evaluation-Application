@@ -1,0 +1,74 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - IKU Evaluation</title>
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/Navbar.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/footer.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Play&display=swap" rel="stylesheet">
+
+    <!-- Scripts -->
+    <script src="~/js/login.js" defer></script>
+    <script src="~/js/index.js" defer></script>
+</head>
+<body>
+
+    <!-- Navigation -->
+    <header>
+        <nav>
+            <div class="wrapper">
+                <div class="logo">
+                    <a href="#">IKU - Evaluation</a>
+                </div>
+
+                <input type="radio" name="slider" id="menu-btn">
+                <input type="radio" name="slider" id="close-btn">
+
+                <ul class="nav-links">
+                    <label for="close-btn" class="btn close-btn"><i class="fas fa-times"></i></label>
+
+                    <!-- Dynamic Home link -->
+                    <li>
+                        <a style="color: white;" href="@(
+                            Context.Session.GetString("Role") == "Teacher"
+                                ? Url.Action("Dashboard", "Teacher")
+                                : Url.Action("Index", "Home")
+                        )">Home</a>
+                    </li>
+
+                </ul>
+
+                <label for="menu-btn" class="btn menu-btn"><i class="fas fa-bars"></i></label>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Main Content -->
+    <div class="container">
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer mt-auto py-3 bg-dark text-white text-center">
+        <div class="container">
+            <span class="fw-light">© 2025 Evaluation Project</span>
+        </div>
+    </footer>
+
+    <!-- JS Dependencies -->
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+
+</body>
+</html>

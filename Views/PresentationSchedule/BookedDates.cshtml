@@ -1,0 +1,52 @@
+﻿@{
+    ViewData["Title"] = "Presentation Schedule";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var projects = ViewBag.Projects as List<Dictionary<string, object>>;
+}
+
+<h2 class="mt-4 text-center">Presentation Schedule</h2>
+
+@if (projects != null && projects.Count > 0)
+{
+    <div class="container mt-4">
+        <table class="table table-bordered table-striped">
+            <thead class="table-dark">
+                <tr>
+                    <th>Project Title</th>
+                    <th>Project ID</th>
+                    <th>Enrolled Students</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var project in projects)
+                {
+                    var projectId = project["projectId"]?.ToString();
+                    var title = project.ContainsKey("title") ? project["title"]?.ToString() : "Untitled";
+                    var enrolled = project.ContainsKey("enrolled") ? project["enrolled"] as IEnumerable<object> : new List<object>();
+
+                    <tr>
+                        <td>@title</td>
+                        <td>@projectId</td>
+                        <td>
+                            @foreach (var student in enrolled)
+                            {
+                                <span class="badge bg-primary me-1">@student.ToString()</span>
+                            }
+                        </td>
+                        <td>
+                            <form method="post" asp-action="Book" asp-controller="PresentationSchedule">
+                                <input type="hidden" name="projectId" value="@projectId" />
+                                <button type="submit" class="btn btn-success btn-sm">Book Schedule</button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+else
+{
+    <p class="text-danger text-center">No projects found for this professor.</p>
+}

@@ -1,0 +1,125 @@
+is_global = true
+build_property.TargetFramework = net8.0
+build_property.TargetPlatformMinVersion = 
+build_property.UsingMicrosoftNETSdkWeb = true
+build_property.ProjectTypeGuids = 
+build_property.InvariantGlobalization = 
+build_property.PlatformNeutralAssembly = 
+build_property.EnforceExtendedAnalyzerRules = 
+build_property._SupportedPlatformList = Linux,macOS,Windows
+build_property.RootNamespace = SoftwareProject
+build_property.RootNamespace = SoftwareProject
+build_property.ProjectDir = D:\IKU\Software Engineering\Lab\SoftwareProjectson\SoftwareProject\
+build_property.EnableComHosting = 
+build_property.EnableGeneratedComInterfaceComImportInterop = 
+build_property.RazorLangVersion = 8.0
+build_property.SupportLocalizedComponentNames = 
+build_property.GenerateRazorMetadataSourceChecksumAttributes = 
+build_property.MSBuildProjectDirectory = D:\IKU\Software Engineering\Lab\SoftwareProjectson\SoftwareProject
+build_property._RazorSourceGeneratorDebug = 
+build_property.EffectiveAnalysisLevelStyle = 8.0
+build_property.EnableCodeStyleSeverity = 
+
+[D:/IKU/Software Engineering/Lab/SoftwareProjectson/SoftwareProject/Views/Calendar/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ2FsZW5kYXJcSW5kZXguY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/IKU/Software Engineering/Lab/SoftwareProjectson/SoftwareProject/Views/Home/Admin.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxBZG1pbi5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/IKU/Software Engineering/Lab/SoftwareProjectson/SoftwareProject/Views/Home/File.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxGaWxlLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/IKU/Software Engineering/Lab/SoftwareProjectson/SoftwareProject/Views/Home/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxJbmRleC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/IKU/Software Engineering/Lab/SoftwareProjectson/SoftwareProject/Views/Home/MyProject.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxNeVByb2plY3QuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/IKU/Software Engineering/Lab/SoftwareProjectson/SoftwareProject/Views/Home/NecessaryDocument.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxOZWNlc3NhcnlEb2N1bWVudC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/IKU/Software Engineering/Lab/SoftwareProjectson/SoftwareProject/Views/Home/Privacy.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxQcml2YWN5LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/IKU/Software Engineering/Lab/SoftwareProjectson/SoftwareProject/Views/Home/Results.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxSZXN1bHRzLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/IKU/Software Engineering/Lab/SoftwareProjectson/SoftwareProject/Views/Home/takvim.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVx0YWt2aW0uY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/IKU/Software Engineering/Lab/SoftwareProjectson/SoftwareProject/Views/Login/Login.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTG9naW5cTG9naW4uY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/IKU/Software Engineering/Lab/SoftwareProjectson/SoftwareProject/Views/PresentationSchedule/BookedDates.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUHJlc2VudGF0aW9uU2NoZWR1bGVcQm9va2VkRGF0ZXMuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/IKU/Software Engineering/Lab/SoftwareProjectson/SoftwareProject/Views/PresentationSchedule/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUHJlc2VudGF0aW9uU2NoZWR1bGVcSW5kZXguY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/IKU/Software Engineering/Lab/SoftwareProjectson/SoftwareProject/Views/PresentationSchedule/NoMatch.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUHJlc2VudGF0aW9uU2NoZWR1bGVcTm9NYXRjaC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/IKU/Software Engineering/Lab/SoftwareProjectson/SoftwareProject/Views/PresentationSchedule/ScheduleResult.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUHJlc2VudGF0aW9uU2NoZWR1bGVcU2NoZWR1bGVSZXN1bHQuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/IKU/Software Engineering/Lab/SoftwareProjectson/SoftwareProject/Views/Project/Create.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUHJvamVjdFxDcmVhdGUuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/IKU/Software Engineering/Lab/SoftwareProjectson/SoftwareProject/Views/Project/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUHJvamVjdFxJbmRleC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/IKU/Software Engineering/Lab/SoftwareProjectson/SoftwareProject/Views/Project/Manage.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUHJvamVjdFxNYW5hZ2UuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/IKU/Software Engineering/Lab/SoftwareProjectson/SoftwareProject/Views/Shared/Error.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXEVycm9yLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/IKU/Software Engineering/Lab/SoftwareProjectson/SoftwareProject/Views/Shared/_ValidationScriptsPartial.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9WYWxpZGF0aW9uU2NyaXB0c1BhcnRpYWwuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/IKU/Software Engineering/Lab/SoftwareProjectson/SoftwareProject/Views/Teacher/CreateProject.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVGVhY2hlclxDcmVhdGVQcm9qZWN0LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/IKU/Software Engineering/Lab/SoftwareProjectson/SoftwareProject/Views/Teacher/Dashboard.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVGVhY2hlclxEYXNoYm9hcmQuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/IKU/Software Engineering/Lab/SoftwareProjectson/SoftwareProject/Views/Teacher/ManageProjects.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVGVhY2hlclxNYW5hZ2VQcm9qZWN0cy5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/IKU/Software Engineering/Lab/SoftwareProjectson/SoftwareProject/Views/Teacher/ReviewProjects.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVGVhY2hlclxSZXZpZXdQcm9qZWN0cy5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/IKU/Software Engineering/Lab/SoftwareProjectson/SoftwareProject/Views/_ViewImports.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcX1ZpZXdJbXBvcnRzLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/IKU/Software Engineering/Lab/SoftwareProjectson/SoftwareProject/Views/_ViewStart.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcX1ZpZXdTdGFydC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/IKU/Software Engineering/Lab/SoftwareProjectson/SoftwareProject/Views/Shared/_Layout.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9MYXlvdXQuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = b-vazwpdjr2a

@@ -1,0 +1,161 @@
+@{
+    ViewData["Title"] = "Teacher Dashboard";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teacher Dashboard</title>
+    <style>
+        :root {
+            --red: #e74c3c;
+            --cyan: #1abc9c;
+            --orange: #f39c12;
+            --blue: #3498db;
+            --purple: #9b59b6;
+            --dark: #2c3e50;
+            --gray: #95a5a6;
+            --light: #ecf0f1;
+            --black: #000000;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f7fa;
+            margin: 0;
+            padding: 0;
+        }
+
+        .dashboard-container {
+            max-width: 1200px;
+            margin: 60px auto 0;
+            padding: 40px 20px;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 25px;
+            margin-top: 30px;
+        }
+
+        .dashboard-box {
+            background: white;
+            border-radius: 8px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            transition: all 0.3s ease;
+            min-height: 200px;
+            display: flex;
+            flex-direction: column;
+            cursor: pointer;
+        }
+
+            .dashboard-box:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            }
+
+            .dashboard-box h2 {
+                margin: 0 0 15px 0;
+                color: var(--dark);
+                font-size: 1.3rem;
+            }
+
+            .dashboard-box p {
+                color: var(--gray);
+                margin: 0;
+                flex-grow: 1;
+            }
+
+            .dashboard-box .icon {
+                align-self: flex-end;
+                margin-top: 20px;
+                width: 40px;
+                height: 40px;
+            }
+
+        .box-1 {
+            border-top: 4px solid var(--red);
+        }
+
+        .box-2 {
+            border-top: 4px solid var(--cyan);
+        }
+
+        .box-3 {
+            border-top: 4px solid var(--blue);
+        }
+
+        .box-4 {
+            border-top: 4px solid var(--orange);
+        }
+
+        .box-5 {
+            border-top: 4px solid var(--purple);
+        }
+
+        .box-6 {
+            border-top: 4px solid var(--black);
+        }
+
+        .clickable-box {
+            display: contents;
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <div class="dashboard-grid">
+
+            <!-- Create Project -->
+            <a href="@Url.Action("Create", "Project")" class="clickable-box">
+                <div class="dashboard-box box-1">
+                    <h2>Create Project</h2>
+                    <p>Create and publish a project for students.</p>
+                    <img src="~/Photo/project.svg" class="icon" alt="Create Project" />
+                </div>
+            </a>
+
+            <!-- Manage Projects -->
+            <a href="@Url.Action("Manage", "Project")" class="clickable-box">
+                <div class="dashboard-box box-2">
+                    <h2>Manage Projects</h2>
+                    <p>Review student enrollments and update projects.</p>
+                    <img src="~/Photo/manage.svg" class="icon" alt="Manage Projects" />
+                </div>
+            </a>
+
+            <!-- Presentation Schedule -->
+            <a href="@Url.Action("Index", "PresentationSchedule")" class="clickable-box">
+                <div class="dashboard-box box-3">
+                    <h2>Presentation Schedule</h2>
+                    <p>Schedule presentation slots with students.</p>
+                    <img src="~/Photo/schedule.svg" class="icon" alt="Presentation Schedule" />
+                </div>
+            </a>
+
+            <!-- Calendar -->
+            <a href="@Url.Action("Index", "Calendar")" class="clickable-box">
+                <div class="dashboard-box box-4">
+                    <h2>Calendar</h2>
+                    <p>View and manage your available dates.</p>
+                    <img src="~/Photo/calendar.svg" class="icon" alt="Calendar" />
+                </div>
+            </a>
+
+            <!-- Review Documents -->
+            <a href="@Url.Action("ReviewProjects", "Teacher")" class="clickable-box">
+                <div class="dashboard-box box-5">
+                    <h2>Review Documents</h2>
+                    <p>View and comment on student uploads.</p>
+                    <img src="~/Photo/review.svg" class="icon" alt="Review Documents" />
+                </div>
+            </a>
+
+        </div>
+    </div>
+</body>
+</html>

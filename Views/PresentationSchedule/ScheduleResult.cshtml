@@ -1,0 +1,57 @@
+﻿@{
+    ViewData["Title"] = "Schedule Result";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var studentList = ViewBag.EnrolledStudents as List<string>;
+    var noMatch = ViewBag.NoMatch as bool? ?? false;
+}
+
+<div class="container mt-5 pt-4">
+    <h2>Presentation Scheduled</h2>
+    <p><strong>Project:</strong> @ViewBag.ProjectTitle</p>
+    <p><strong>Professor ID:</strong> @ViewBag.ProfessorId</p>
+
+    @if (ViewBag.ScheduledDate != null)
+    {
+        <p><strong>Scheduled Date:</strong> <span class="badge bg-success">@ViewBag.ScheduledDate</span></p>
+    }
+
+    <h4>Enrolled Students:</h4>
+    <ul>
+        @foreach (var s in studentList)
+        {
+            <li>@s</li>
+        }
+    </ul>
+
+    @if (noMatch)
+    {
+        <div class="alert alert-warning mt-3">
+            ❌ No match date with the student. Click the button below to send mail.
+        </div>
+
+        @if (studentList != null && studentList.Count > 0)
+        {
+            var studentEmail = $"{studentList[0]}@stu.iku.edu.tr";
+            var subject = "Entry Available date for the project presentation";
+            var availableDates = ViewBag.TeacherDates as List<string>;
+            var teacherFullName = ViewBag.TeacherName as string ?? "";
+
+            var body = "Dear Student,%0D%0A%0D%0A" +
+            "Please select the available date on your portal for the project presentation:%0D%0A";
+
+            foreach (var date in availableDates)
+            {
+                body += $"- {date}%0D%0A";
+            }
+
+            body += "%0D%0ABest wishes,%0D%0A" + teacherFullName;
+
+            <a class="btn btn-danger mb-3"
+               href="mailto:@studentEmail?subject=@Uri.EscapeDataString(subject)&body=@body">
+                Send Mail
+            </a>
+        }
+    }
+
+    <a href="@Url.Action("Index", "PresentationSchedule")" class="btn btn-secondary">← Back to Schedule</a>
+</div>

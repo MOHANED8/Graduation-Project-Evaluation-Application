@@ -1,0 +1,40 @@
+﻿@{
+    ViewData["Title"] = "Project Results";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<!-- Outer container adds spacing from navbar and footer -->
+<div class="container mt-5 pt-5 mb-5">
+    <div class="card shadow-lg">
+        <div class="card-header text-white text-center d-flex align-items-center justify-content-center"
+             style="height: 80px; background-color: #40E0D0;">
+            <span style="font-size: 1.5rem;">⭐</span>
+            <h2 class="mb-0 ms-2">Project Results</h2>
+        </div>
+
+        <div class="card-body">
+            <div class="mb-4">
+                <h4 class="text-secondary">Total Grade to Percent:</h4>
+                <p class="fs-4 fw-bold text-dark">@ViewBag.TotalGrateToPercent%</p>
+            </div>
+
+            <div class="mb-4">
+                <h4 class="text-secondary">Professor Information:</h4>
+                <p class="mb-1">
+                    Email: <a href="mailto:@ViewBag.ProfEm" class="text-primary">@ViewBag.ProfEm</a>
+                </p>
+            </div>
+
+            <div class="mb-4">
+                <h4 class="text-secondary">Professor Comment:</h4>
+                <p class="fst-italic">Comment: @ViewBag.GenelYorum</p>
+            </div>
+
+            <div class="text-center">
+                <a href="@Url.Action("Index", "Home")" class="btn btn-outline-primary mt-3">
+                    <i class="bi bi-arrow-left-circle"></i> Back to Home
+                </a>
+            </div>
+        </div>
+    </div>
+</div>

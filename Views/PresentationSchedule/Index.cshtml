@@ -1,0 +1,55 @@
+﻿@model List<SoftwareProject.Models.ProjectScheduleViewModel>
+
+@{
+    ViewData["Title"] = "Presentation Schedule";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container mt-5 pt-4">
+    <h2 class="text-center mb-4">📅 Presentation Schedule</h2>
+
+    @if (Model != null && Model.Any())
+    {
+        <table class="table table-bordered table-hover">
+            <thead class="thead-dark">
+                <tr>
+                    <th>Project Title</th>
+                    <th>Description</th>
+                    <th>Enrolled Students</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var project in Model)
+                {
+                    <tr>
+                        <td>@project.ProjectTitle</td>
+                        <td>@project.Description</td>
+                        <td>
+                            @if (project.EnrolledStudents != null && project.EnrolledStudents.Any())
+                            {
+                                <ul>
+                                    @foreach (var student in project.EnrolledStudents)
+                                    {
+                                        <li>@student</li>
+                                    }
+                                </ul>
+                            }
+                            else
+                            {
+                                <span>No students enrolled</span>
+                            }
+                        </td>
+                        <td>
+                            <a href="@Url.Action("Schedule", "PresentationSchedule", new { projectId = project.ProjectId })" class="btn btn-primary">Schedule</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <div class="alert alert-info">No projects found.</div>
+    }
+</div>

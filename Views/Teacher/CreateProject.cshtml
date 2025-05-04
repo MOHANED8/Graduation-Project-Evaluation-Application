@@ -1,0 +1,21 @@
+@model SoftwareProject.Models.ProjectModel
+@{
+    ViewData["Title"] = "Create Project";
+}
+
+<h2>Create New Project</h2>
+<form asp-action="CreateProject" method="post">
+    <div class="form-group">
+        <label>Title</label>
+        <input asp-for="Title" class="form-control" required />
+    </div>
+    <div class="form-group">
+        <label>Description</label>
+        <textarea asp-for="Description" class="form-control" required></textarea>
+    </div>
+    <div class="form-group">
+        <label>Total Slots</label>
+        <input asp-for="TotalSlots" type="number" class="form-control" required />
+    </div>
+    <button type="submit" class="btn btn-success">Create</button>
+</form>
