@@ -1,0 +1,324 @@
+@model List<SoftwareProject.Models.MeetingModel>
+@{
+    ViewData["Title"] = "Meeting Rescheduling";
+}
+
+<div class="container mt-5 pt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Meeting Rescheduling</h2>
+        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addMeetingModal">
+            <i class="fa fa-plus"></i> Schedule New Meeting
+        </button>
+    </div>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            @TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            @TempData["Error"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    @if (ViewBag.MeetingProjectCount != null && ViewBag.MeetingProjectCount > 0)
+    {
+        <div class="alert alert-info mb-4">
+            <strong>Scheduled Projects:</strong> @ViewBag.MeetingProjectCount
+        </div>
+    }
+
+    @if (ViewBag.ScheduledProjects != null && ((List<Dictionary<string, object>>)ViewBag.ScheduledProjects).Count > 0)
+    {
+        <div class="card mb-4">
+            <div class="card-header bg-info text-white">
+                <strong>Scheduled Projects</strong>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Project Title</th>
+                                <th>Primary Teacher</th>
+                                <th>Secondary Teacher</th>
+                                <th>Presentation Date</th>
+                                <th>Presentation Time</th>
+                                <th>Enrolled Students</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var proj in (List<Dictionary<string, object>>)ViewBag.ScheduledProjects)
+                            {
+                                var enrolledList = proj.ContainsKey("enrolled") ? (proj["enrolled"] as IEnumerable<object> ?? new List<object>()) : new List<object>();
+                                var presDateRaw = proj.GetValueOrDefault("presentationDate", "-")?.ToString() ?? "-";
+                                var presDateParts = presDateRaw.Split('|');
+                                var presDate = presDateParts.Length > 0 ? presDateParts[0] : "-";
+                                var presTime = presDateParts.Length > 2 ? $"({presDateParts[1]}, {presDateParts[2]})" : "-";
+                                var status = proj.ContainsKey("status") ? proj["status"]?.ToString() ?? "Scheduled" : (!string.IsNullOrEmpty(proj.GetValueOrDefault("presentationDate", "")?.ToString()) ? "Scheduled" : "Pending");
+                                var badgeClass = status switch
+                                {
+                                    "Scheduled" => "bg-success",
+                                    "Completed" => "bg-secondary",
+                                    "Cancelled" => "bg-danger",
+                                    "On Hold" => "bg-warning",
+                                    _ => "bg-info"
+                                };
+                                var studentId = proj.GetValueOrDefault("studentId", "-");
+                                var projectId = proj.GetValueOrDefault("projectId", "-");
+                                <tr>
+                                    <td>@proj.GetValueOrDefault("projectTitle", "-")</td>
+                                    <td>@proj.GetValueOrDefault("primaryTeacherID", "-")</td>
+                                    <td>@proj.GetValueOrDefault("secondaryTeacherID", "-")</td>
+                                    <td>@presDate</td>
+                                    <td>@presTime</td>
+                                    <td>@string.Join(", ", enrolledList)</td>
+                                    <td>
+                                        <span class="badge @badgeClass">
+                                            @status
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <div class="btn-group">
+                                            <button class="btn btn-sm btn-dark" onclick="changeProjectStatus('@studentId', '@projectId', '@status')" title="Change Status">
+                                                <i class="fa fa-exchange"></i>
+                                            </button>
+                                            <button class="btn btn-sm btn-warning" onclick="editPresentation('@studentId', '@projectId', this)" title="Edit">
+                                                <i class="fa fa-edit"></i>
+                                            </button>
+                                            <button class="btn btn-sm btn-danger" onclick="deletePresentation('@studentId', '@projectId', '@presDateRaw', '@proj.GetValueOrDefault("primaryTeacherID", "")', '@proj.GetValueOrDefault("secondaryTeacherID", "")')" title="Delete">
+                                                <i class="fa fa-trash"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    }
+
+    <!-- Meetings Table -->
+    <!-- Removed the Meetings Table as requested -->
+
+</div>
+
+<!-- Reschedule Meeting Modal -->
+<div class="modal fade" id="rescheduleMeetingModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Reschedule Meeting</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form asp-action="RescheduleMeeting" method="post">
+                <div class="modal-body">
+                    <input type="hidden" id="meetingId" name="meetingId">
+                    <div class="mb-3">
+                        <label class="form-label">New Date</label>
+                        <input type="date" class="form-control" name="newDate" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">New Time</label>
+                        <input type="time" class="form-control" name="newTime" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Reschedule</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Add Meeting Modal -->
+<div class="modal fade" id="addMeetingModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Schedule New Meeting</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="addMeetingForm" asp-action="AddMeeting" method="post">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Student ID</label>
+                        <input type="text" class="form-control" id="addStudentId" name="StudentEmail" required>
+                    </div>
+                    <div id="projectTitleDisplay" class="mb-2 text-info"></div>
+                    <input type="hidden" id="addMeetingTitle" name="Title" />
+                    <div class="mb-3">
+                        <label class="form-label">Primary Teacher ID</label>
+                        <input type="text" class="form-control" id="addPrimaryTeacherId" name="ProfessorEmail" required readonly>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Secondary Teacher ID</label>
+                        <input type="text" class="form-control" id="addSecondaryTeacherId" name="SecondaryTeacherId" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Date</label>
+                        <input type="date" class="form-control" id="addDate" name="Date" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Time</label>
+                        <input type="time" class="form-control" id="addTime" name="Time" required>
+                    </div>
+                    <div class="alert alert-danger d-none" id="addMeetingError"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Schedule Meeting</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Presentation Modal -->
+<div class="modal fade" id="editPresentationModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form id="editPresentationForm">
+                <div class="modal-header"><h5 class="modal-title">Edit Presentation</h5></div>
+                <div class="modal-body">
+                    <input type="hidden" id="editStudentId" name="studentId">
+                    <input type="hidden" id="editProjectId" name="projectId">
+                    <div class="mb-3">
+                        <label>Secondary Teacher</label>
+                        <input type="text" class="form-control" id="editSecondaryTeacherID" name="secondaryTeacherID">
+                    </div>
+                    <div class="mb-3">
+                        <label>Presentation Date & Time</label>
+                        <input type="text" class="form-control" id="editPresentationDate" name="presentationDate" placeholder="yyyy-MM-dd|HH:mm|HH:mm">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Save</button>
+                    <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Change Status Modal -->
+<div class="modal fade" id="changeProjectStatusModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form id="changeProjectStatusForm">
+                <div class="modal-header"><h5 class="modal-title">Change Project Status</h5></div>
+                <div class="modal-body">
+                    <input type="hidden" id="changeStatusStudentId" name="studentId">
+                    <input type="hidden" id="changeStatusProjectId" name="projectId">
+                    <div class="mb-3">
+                        <label>Status</label>
+                        <select class="form-select" id="newProjectStatus" name="status">
+                            <option value="Scheduled">Scheduled</option>
+                            <option value="Cancelled">Cancelled</option>
+                            <option value="On Hold">On Hold</option>
+                            <option value="Completed">Completed</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Save</button>
+                    <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function rescheduleMeeting(meetingId) {
+            document.getElementById('meetingId').value = meetingId;
+            new bootstrap.Modal(document.getElementById('rescheduleMeetingModal')).show();
+        }
+
+        function editPresentation(studentId, projectId, btn) {
+            // Populate modal fields from row
+            $('#editStudentId').val(studentId);
+            $('#editProjectId').val(projectId);
+            var row = $(btn).closest('tr');
+            $('#editSecondaryTeacherID').val(row.find('td').eq(2).text());
+            $('#editPresentationDate').val(row.find('td').eq(3).text() + '|' + row.find('td').eq(4).text().replace(/[()]/g, '').replace(', ', '|'));
+            $('#editPresentationModal').modal('show');
+        }
+        $('#editPresentationForm').submit(function(e) {
+            e.preventDefault();
+            var data = $(this).serialize();
+            $.post('/Admin/EditPresentation', data, function(resp) {
+                if (resp.success) location.reload();
+                else alert('Error: ' + (resp.message || 'Could not update presentation.'));
+            });
+        });
+        function deletePresentation(studentId, projectId, presDateRaw, primaryTeacherID, secondaryTeacherID) {
+            if (confirm('Are you sure you want to delete this presentation?')) {
+                $.post('/Admin/DeletePresentation', {
+                    studentId: studentId,
+                    projectId: projectId,
+                    presentationDate: presDateRaw,
+                    primaryTeacherID: primaryTeacherID,
+                    secondaryTeacherID: secondaryTeacherID
+                }, function(resp) {
+                    if (resp.success) location.reload();
+                    else alert('Error: ' + (resp.message || 'Could not delete presentation.'));
+                });
+            }
+        }
+        function changeProjectStatus(studentId, projectId, currentStatus) {
+            $('#changeStatusStudentId').val(studentId);
+            $('#changeStatusProjectId').val(projectId);
+            $('#newProjectStatus').val(currentStatus);
+            $('#changeProjectStatusModal').modal('show');
+        }
+        $('#changeProjectStatusForm').submit(function(e) {
+            e.preventDefault();
+            var data = $(this).serialize();
+            $.post('/Admin/ChangePresentationStatus', data, function(resp) {
+                if (resp.success) location.reload();
+                else alert('Error: ' + (resp.message || 'Could not change status.'));
+            });
+        });
+        $('#addStudentId').on('blur change', function() {
+            var studentId = $(this).val().trim();
+            if (!studentId) return;
+            $.post('/Admin/GetProjectDetailsByStudentId', { studentId: studentId }, function(resp) {
+                if (resp.success) {
+                    $('#addPrimaryTeacherId').val(resp.professorEmail);
+                    $('#addMeetingTitle').val(resp.title); // Set the title for the meeting
+                    $('#projectTitleDisplay').text('Project: ' + resp.title);
+                } else {
+                    $('#addPrimaryTeacherId').val('');
+                    $('#addMeetingTitle').val('');
+                    $('#projectTitleDisplay').text('');
+                    alert(resp.message || 'No project found for this student.');
+                }
+            });
+        });
+        // Prevent form submission if required fields are missing
+        $('#addMeetingForm').submit(function(e) {
+            var studentId = $('#addStudentId').val().trim();
+            var title = $('#addMeetingTitle').val().trim();
+            var date = $('#addDate').val().trim();
+            if (!studentId || !title || !date) {
+                $('#addMeetingError').removeClass('d-none').text('Please fill all required fields and ensure a valid student ID.');
+                e.preventDefault();
+                return false;
+            }
+            $('#addMeetingError').addClass('d-none').text('');
+        });
+    </script>
+} 

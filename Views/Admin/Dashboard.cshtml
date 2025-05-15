@@ -1,0 +1,250 @@
+@model SoftwareProject.Models.AdminDashboardStats
+@{
+    ViewData["Title"] = "Admin Dashboard";
+}
+
+<div class="container-fluid mt-5 pt-4">
+    <h2 class="text-center mb-4">Admin Dashboard</h2>
+
+    <!-- Search and Filter Section -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="input-group">
+                                <input type="text" id="searchInput" class="form-control" placeholder="Search...">
+                                <button class="btn btn-primary" type="button" id="searchButton">
+                                    <i class="fa fa-search"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <select class="form-select" id="filterType">
+                                <option value="all">All</option>
+                                <option value="students">Students</option>
+                                <option value="teachers">Teachers</option>
+                                <option value="projects">Projects</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <select class="form-select" id="sortBy">
+                                <option value="name">Sort by Name</option>
+                                <option value="date">Sort by Date</option>
+                                <option value="status">Sort by Status</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation Menu -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <ul class="nav nav-pills nav-fill">
+                        <li class="nav-item">
+                            <a class="nav-link active" href="@Url.Action("Dashboard", "Admin")">
+                                <i class="fa fa-tachometer-alt"></i> Dashboard
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="@Url.Action("TeacherControl", "Admin")">
+                                <i class="fa fa-chalkboard-teacher"></i> Teachers
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="@Url.Action("ProjectManagement", "Admin")">
+                                <i class="fa fa-project-diagram"></i> Projects
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="@Url.Action("MeetingRescheduling", "Admin")">
+                                <i class="fa fa-calendar-alt"></i> Meetings
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="@Url.Action("MessageCenter", "Admin")">
+                                <i class="fa fa-envelope"></i> Messages
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="@Url.Action("ActivityLog", "Admin")">
+                                <i class="fa fa-history"></i> Activity Log
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="@Url.Action("Settings", "Admin")">
+                                <i class="fa fa-cog"></i> Settings
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card bg-primary text-white">
+                <div class="card-body">
+                    <h5 class="card-title">Total Students</h5>
+                    <h2 class="card-text">@Model.TotalStudents</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-success text-white">
+                <div class="card-body">
+                    <h5 class="card-title">Total Teachers</h5>
+                    <h2 class="card-text">@Model.TotalTeachers</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-info text-white">
+                <div class="card-body">
+                    <h5 class="card-title">Total Projects</h5>
+                    <h2 class="card-text">@Model.TotalProjects</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-secondary text-white">
+                <div class="card-body">
+                    <h5 class="card-title">Scheduled Projects</h5>
+                    <h2 class="card-text" id="scheduledProjects">Loading...</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Quick Actions</h5>
+                    <button class="btn btn-sm btn-outline-primary" id="refreshStats">
+                        <i class="fa fa-sync-alt"></i> Refresh
+                    </button>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <a href="@Url.Action("TeacherControl", "Admin")" class="btn btn-outline-success btn-block">
+                                <i class="fa fa-user-plus"></i> Add Teacher
+                            </a>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <a href="@Url.Action("MeetingRescheduling", "Admin")" class="btn btn-outline-warning btn-block">
+                                <i class="fa fa-calendar-plus"></i> Schedule Meeting
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">System Status</h5>
+                    <span class="badge bg-success" id="lastUpdate">Just now</span>
+                </div>
+                <div class="card-body">
+                    <div class="list-group">
+                        <div class="list-group-item">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span>Database Status</span>
+                                <span class="badge bg-success">Online</span>
+                            </div>
+                        </div>
+                        <div class="list-group-item">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span>Firebase Connection</span>
+                                <span class="badge bg-success">Connected</span>
+                            </div>
+                        </div>
+                        <div class="list-group-item">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span>System Version</span>
+                                <span class="badge bg-info">1.0.0</span>
+                            </div>
+                        </div>
+                        <div class="list-group-item">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span>Last Backup</span>
+                                <span class="badge bg-secondary">@DateTime.Now.ToString("MMM dd, yyyy")</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            // Add active class to current nav item
+            const currentPath = window.location.pathname;
+            $('.nav-link').each(function() {
+                if ($(this).attr('href') === currentPath) {
+                    $(this).addClass('active');
+                } else {
+                    $(this).removeClass('active');
+                }
+            });
+
+            // Search functionality
+            $('#searchButton').click(function() {
+                const searchTerm = $('#searchInput').val().toLowerCase();
+                const filterType = $('#filterType').val();
+                // Implement search logic here
+            });
+
+            // Filter functionality
+            $('#filterType').change(function() {
+                const filterType = $(this).val();
+                // Implement filter logic here
+            });
+
+            // Sort functionality
+            $('#sortBy').change(function() {
+                const sortBy = $(this).val();
+                // Implement sort logic here
+            });
+
+            // Refresh stats
+            $('#refreshStats').click(function() {
+                // Implement refresh logic here
+                updateLastUpdate();
+            });
+
+            function updateLastUpdate() {
+                const now = new Date();
+                $('#lastUpdate').text('Updated: ' + now.toLocaleTimeString());
+            }
+
+            // Initial stats update
+            updateStats();
+            setInterval(updateStats, 300000); // Update every 5 minutes
+
+            function updateStats() {
+                // Implement stats update logic here
+                updateLastUpdate();
+            }
+
+            // Fetch and display scheduled projects count
+            $.get('/Admin/GetScheduledProjectsCount', function(data) {
+                $('#scheduledProjects').text(data.count);
+            });
+        });
+    </script>
+} 

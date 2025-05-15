@@ -31,6 +31,8 @@ namespace SoftwareProject.Controllers
             foreach (var doc in projectsSnapshot.Documents)
             {
                 var data = doc.ToDictionary();
+                var status = data.ContainsKey("Status") ? data["Status"]?.ToString() : "Pending";
+                if (status != "Approved") continue;
                 var enrolledList = data.ContainsKey("enrolled") ? ((List<object>)data["enrolled"]).Select(x => x.ToString()).ToList() : new List<string>();
                 var requestedList = data.ContainsKey("requested") ? ((List<object>)data["requested"]).Select(x => x.ToString()).ToList() : new List<string>();
 
@@ -47,7 +49,6 @@ namespace SoftwareProject.Controllers
                     Enrolled = enrolledList,
                     Requested = requestedList
                 };
-
                 projects.Add(model);
             }
 
@@ -62,36 +63,45 @@ namespace SoftwareProject.Controllers
             var studentId = HttpContext.Session.GetString("Username");
             if (string.IsNullOrEmpty(studentId)) return RedirectToAction("Login", "Login");
 
-            var projectsRef = db.Collection("evaluation-project").Document("ProjectList").Collection("Projects");
-            var projectsSnapshot = await projectsRef.GetSnapshotAsync();
-
-            foreach (var doc in projectsSnapshot.Documents)
+            try
             {
-                var data = doc.ToDictionary();
-                if (data.ContainsKey("enrolled") && ((List<object>)data["enrolled"]).Select(x => x.ToString()).Contains(studentId))
+                // Check all projects for existing enrollment
+                var projectsRef = db.Collection("evaluation-project").Document("ProjectList").Collection("Projects");
+                var projectsSnapshot = await projectsRef.GetSnapshotAsync();
+
+                foreach (var doc in projectsSnapshot.Documents)
                 {
-                    TempData["Error"] = "You are already enrolled in a project.";
-                    return RedirectToAction("Index");
+                    var data = doc.ToDictionary();
+                    if (data.ContainsKey("enrolled") && ((List<object>)data["enrolled"]).Select(x => x.ToString()).Contains(studentId))
+                    {
+                        TempData["Error"] = "You are already enrolled in a project.";
+                        return RedirectToAction("Index");
+                    }
+                }
+
+                // Check and update the target project
+                var projectRef = projectsRef.Document(projectId);
+                var snapshot = await projectRef.GetSnapshotAsync();
+                var projectData = snapshot.ToDictionary();
+
+                var requested = projectData.ContainsKey("requested")
+                    ? ((List<object>)projectData["requested"]).Select(x => x.ToString()).ToList()
+                    : new List<string>();
+
+                if (requested.Contains(studentId))
+                {
+                    TempData["Error"] = "You have already requested this project.";
+                }
+                else
+                {
+                    requested.Add(studentId);
+                    await projectRef.UpdateAsync("requested", requested);
+                    TempData["Success"] = "Request sent to the teacher.";
                 }
             }
-
-            var projectRef = projectsRef.Document(projectId);
-            var snapshot = await projectRef.GetSnapshotAsync();
-            var projectData = snapshot.ToDictionary();
-
-            var requested = projectData.ContainsKey("requested")
-                ? ((List<object>)projectData["requested"]).Select(x => x.ToString()).ToList()
-                : new List<string>();
-
-            if (requested.Contains(studentId))
+            catch (Exception)
             {
-                TempData["Error"] = "You have already requested this project.";
-            }
-            else
-            {
-                requested.Add(studentId);
-                await projectRef.UpdateAsync("requested", requested);
-                TempData["Success"] = "Request sent to the teacher.";
+                TempData["Error"] = "An error occurred. Please try again.";
             }
 
             return RedirectToAction("Index");
@@ -176,6 +186,11 @@ namespace SoftwareProject.Controllers
         {
             var projectRef = db.Collection("evaluation-project").Document("ProjectList").Collection("Projects").Document(projectId);
             var snapshot = await projectRef.GetSnapshotAsync();
+            if (!snapshot.Exists)
+            {
+                TempData["Error"] = "Project not found. It may have been deleted.";
+                return RedirectToAction("Manage");
+            }
             var data = snapshot.ToDictionary();
 
             var enrolled = data.ContainsKey("enrolled") ? ((List<object>)data["enrolled"]).Select(x => x.ToString()).ToList() : new List<string>();
@@ -222,8 +237,6 @@ namespace SoftwareProject.Controllers
             return RedirectToAction("Manage");
         }
 
-
-
         [HttpPost]
         public async Task<IActionResult> RejectStudent(string projectId, string studentId)
         {
@@ -242,7 +255,5 @@ namespace SoftwareProject.Controllers
 
             return RedirectToAction("Manage");
         }
-
-
     }
 }

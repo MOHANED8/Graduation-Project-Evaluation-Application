@@ -1,0 +1,113 @@
+@{
+    ViewData["Title"] = "Message Center";
+    var messages = ViewBag.Messages as List<dynamic>;
+}
+
+<style>
+    .modern-table-modal {
+        width: 100%;
+        table-layout: fixed;
+        background: #f8fbff;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    }
+    .modern-table-modal th,
+    .modern-table-modal td {
+        padding: 12px 8px;
+        vertical-align: middle;
+        font-size: 0.98rem;
+    }
+    .modern-table-modal th {
+        background: #00bfff;
+        color: #fff;
+        font-weight: 600;
+        border-bottom: 2px solid #b6e0fe;
+    }
+    .modern-table-modal tbody tr {
+        transition: background 0.2s;
+    }
+    .modern-table-modal tbody tr:hover {
+        background: #eaf6ff;
+    }
+</style>
+
+<div class="container mt-5 pt-4">
+    <h2 class="mb-4">Message Center</h2>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success">@TempData["Success"]</div>
+    }
+
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5>Send Broadcast Message</h5>
+        </div>
+        <div class="card-body">
+            <form asp-action="SendBroadcast" method="post">
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <label class="form-label">Send To</label>
+                        <select name="userType" class="form-select" required>
+                            <option value="Student">All Students</option>
+                            <option value="Teacher">All Teachers</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Subject</label>
+                        <input type="text" class="form-control" name="subject" required />
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Message</label>
+                        <input type="text" class="form-control" name="message" required />
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary">Send Broadcast</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <h5>All Messages</h5>
+        </div>
+        <div class="card-body">
+            <table class="modern-table-modal table table-bordered mb-0">
+                <thead>
+                    <tr>
+                        <th>To</th>
+                        <th>Subject</th>
+                        <th>Message</th>
+                        <th>Sent At</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (messages != null && messages.Count > 0)
+                    {
+                        foreach (var msg in messages)
+                        {
+                            <tr>
+                                <td>@msg.UserType (@msg.UserId)</td>
+                                <td>@msg.Subject</td>
+                                <td>@msg.Message</td>
+                                <td>@(msg.SentAt != null ? ((DateTime)msg.SentAt).ToString("g") : "")</td>
+                                <td>
+                                    <form asp-action="DeleteMessage" method="post" style="display:inline;">
+                                        <input type="hidden" name="id" value="@msg.Id" />
+                                        <button type="submit" class="btn btn-danger btn-sm"><i class="fa fa-trash"></i> Delete</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr><td colspan="5" class="text-center text-muted">No messages found.</td></tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div> 

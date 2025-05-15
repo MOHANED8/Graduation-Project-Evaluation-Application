@@ -13,58 +13,117 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@ViewData["Title"]</title>
     <link rel="stylesheet" href="~/css/File.css" />
+    <style>
+        body, html {
+            background: #f5f7fa !important;
+        }
+        .Filecontainer {
+            background: #f5f7fa !important;
+            min-height: 100vh;
+        }
+        .upload-card {
+            max-width: 500px;
+            margin: 40px auto;
+            background: #f8fbff;
+            border-radius: 16px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+            padding: 0;
+            overflow: hidden;
+        }
+        .upload-card-header {
+            background: #00bfff;
+            color: #fff;
+            padding: 24px 32px 16px 32px;
+            border-top-left-radius: 16px;
+            border-top-right-radius: 16px;
+            font-size: 1.5rem;
+            font-weight: 600;
+            text-align: center;
+        }
+        .upload-card-body {
+            padding: 32px 32px 24px 32px;
+        }
+        .upload-card .form-group label {
+            font-weight: 500;
+            color: #0077b6;
+        }
+        .upload-card .form-control {
+            border-radius: 8px;
+            border: 1px solid #b6e0fe;
+            margin-bottom: 18px;
+        }
+        .upload-card .btn-primary {
+            background: #00bfff;
+            border: none;
+            border-radius: 8px;
+            padding: 10px 28px;
+            font-size: 1.1rem;
+            font-weight: 500;
+            transition: background 0.2s;
+        }
+        .upload-card .btn-primary:hover {
+            background: #0099cc;
+        }
+        .alert-danger {
+            margin: 32px auto;
+            max-width: 500px;
+        }
+    </style>
 </head>
 <body>
     <div class="Filecontainer">
-        <h2>Upload Project</h2>
-
-        @if (projectTitle == null || professorEmail == null)
-        {
-            <div class="alert alert-danger">
-                ❌ You are not eligible to upload a project. Please enroll in a project first.
+        <div class="upload-card">
+            <div class="upload-card-header">Upload Project</div>
+            <div class="upload-card-body">
+                @if (projectTitle == null || professorEmail == null)
+                {
+                    <div class="alert alert-danger">
+                        ❌ You are not eligible to upload a project. Please enroll in a project first.
+                    </div>
+                }
+                else
+                {
+                    <form asp-controller="Home" asp-action="Upload" method="post" enctype="multipart/form-data">
+                        <div class="form-group">
+                            <label for="title">Project Title:</label>
+                            <input name="title" class="form-control" value="@projectTitle" readonly />
+                        </div>
+                        <div class="form-group">
+                            <label for="student">Student ID:</label>
+                            <input name="student" class="form-control" value="@username" readonly />
+                        </div>
+                        <div class="form-group">
+                            <label for="professor">Counselor Professor:</label>
+                            <input name="professor" class="form-control" value="@professorEmail" readonly />
+                        </div>
+                        <div class="form-group">
+                            <label for="description">Description:</label>
+                            <textarea name="description" class="form-control" rows="4"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="file">Upload File:</label>
+                            <input name="file" class="form-control" type="file" />
+                        </div>
+                        <button type="submit" class="btn btn-primary">Submit</button>
+                    </form>
+                }
             </div>
-        }
-        else
-        {
-            <form asp-controller="Home" asp-action="Upload" method="post" enctype="multipart/form-data">
-                <div class="form-group">
-                    <label for="title">Project Title:</label>
-                    <input name="title" class="form-control" value="@projectTitle" readonly />
-                </div>
-
-                <div class="form-group">
-                    <label for="student">Student ID:</label>
-                    <input name="student" class="form-control" value="@username" readonly />
-                </div>
-
-                <div class="form-group">
-                    <label for="professor">Counselor Professor:</label>
-                    <input name="professor" class="form-control" value="@professorEmail" readonly />
-                </div>
-
-                <div class="form-group">
-                    <label for="description">Description:</label>
-                    <textarea name="description" class="form-control" rows="4"></textarea>
-                </div>
-
-                <div class="form-group">
-                    <label for="file">Upload File:</label>
-                    <input name="file" class="form-control" type="file"  />
-                </div>
-
-                <button type="submit" class="btn btn-primary">Submit</button>
-            </form>
-        }
+        </div>
     </div>
 
     @if (TempData["UploadSuccess"]?.ToString() == "true")
     {
+        <div class="toast align-items-center text-bg-success border-0 show position-fixed bottom-0 end-0 m-4" role="alert" aria-live="assertive" aria-atomic="true" id="uploadToast">
+            <div class="d-flex">
+                <div class="toast-body">
+                    Your project has been uploaded successfully!
+                </div>
+            </div>
+        </div>
         <script>
-            window.onload = function () {
-                if (confirm("✅ Your project has been uploaded successfully!\nClick OK to go to Home page.")) {
-                    window.location.href = "/Home/Index";
-                }
-            }
+            setTimeout(function () {
+                window.location.href = "/Home/Index";
+            }, 3000); // 2 seconds
         </script>
     }
 </body>

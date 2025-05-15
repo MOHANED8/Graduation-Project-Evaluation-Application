@@ -7,7 +7,7 @@
 <h2 class="mt-4 text-center">Review Student Projects</h2>
 
 <div class="container mt-3">
-    @if (reviews.Count == 0)
+    @if (reviews == null || reviews.Count == 0)
     {
         <div class="alert alert-warning">No student uploads found.</div>
     }
@@ -27,7 +27,17 @@
                     <form method="post" asp-action="SubmitReview" asp-controller="Teacher">
                         <input type="hidden" name="studentId" value="@item.StudentId" />
                         <input type="hidden" name="professorEmail" value="@item.ProfessorEmail" />
-                        <textarea name="feedback" rows="3" class="form-control mb-2" placeholder="Write feedback..."></textarea>
+
+                        <div class="mb-2">
+                            <label for="feedback"><strong>Feedback:</strong></label>
+                            <textarea name="feedback" rows="3" class="form-control" placeholder="Write feedback..."></textarea>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="marks"><strong>Marks (0�100):</strong></label>
+                            <input type="number" name="marks" class="form-control" placeholder="Enter marks" min="0" max="100" required />
+                        </div>
+
                         <button type="submit" class="btn btn-success btn-sm">Submit Feedback</button>
                     </form>
                 </div>

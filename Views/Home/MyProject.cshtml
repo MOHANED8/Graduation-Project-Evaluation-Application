@@ -4,33 +4,97 @@
     var project = ViewBag.Project;
     var file = ViewBag.File;
     var presentationDate = ViewBag.PresentationDate as string;
+    var notEnrolled = ViewBag.NotEnrolled as bool? ?? false;
+    var professorName = ViewBag.ProfessorName as string;
+    var professorEmail = ViewBag.ProfessorEmail as string;
 }
 
-<h2 class="mt-4 text-center">My Approved Project</h2>
+<style>
+    .modern-table-modal {
+        width: 100%;
+        max-width: 700px;
+        margin: 5px auto 0 auto;
+        table-layout: fixed;
+        background: #f8fbff;
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+        font-size: 1.58rem;
+    }
+    .modern-table-modal th,
+    .modern-table-modal td {
+        padding: 18px 18px;
+        vertical-align: middle;
+        font-size: 1.58rem;
+    }
+    .modern-table-modal th {
+        background: #00bfff;
+        color: #fff;
+        font-weight: 600;
+        font:bold;
+        border-bottom: 2px solid #b6e0fe;
+        font-size: 1.52rem;
+    }
+    .modern-table-modal tbody tr {
+        transition: background 0.2s;
+    }
+    .modern-table-modal tbody tr:hover {
+        background: #eaf6ff;
+    }
+    .myproject-gap {
+        margin-top: 48px;
+    }
+</style>
 
-@if (project == null)
+@if (notEnrolled)
 {
-    <div class="alert alert-warning text-center">No project has been assigned yet.</div>
+    <div class="container d-flex justify-content-center align-items-center" style="height: 60vh;">
+        <div class="alert alert-danger text-center shadow-lg p-4 fs-4 w-100">
+            <i class="bi bi-exclamation-triangle-fill text-danger" style="font-size:2rem;"></i><br />
+            You are not enrolled in any project.
+        </div>
+    </div>
 }
-else
+else if (project != null)
 {
-    <div class="container mt-3">
-        <div class="card p-3">
-            <h4>Project Title: @project.Title</h4>
-            <p><strong>Professor:</strong> @project.Professor</p>
-            <p><strong>Presentation Date:</strong> @presentationDate</p>
-
-            @if (file != null)
-            {
-                <hr />
-                <h5>Uploaded Project File:</h5>
-                <p><strong>Description:</strong> @file["Description"]</p>
-                <a href="@file["FileUrl"]" class="btn btn-sm btn-outline-primary" target="_blank">📄 Download</a>
-            }
-            else
-            {
-                <p class="text-muted">No project file uploaded yet.</p>
-            }
+    <div class="container mt-5 pt-4 myproject-gap">
+        <div class="row justify-content-center">
+            <div class="col-md-9">
+                <div class="card shadow-lg">
+                    <div class="card-header bg-primary text-white text-center">
+                        <h3 class="mb-0"><i class="bi bi-journal-text"></i> My Project</h3>
+                    </div>
+                    <div class="card-body">
+                        <table class="modern-table-modal table table-bordered mb-4">
+                            <tr><th style="width:180px;">Project Title</th><td class="text-dark">@project.Title</td></tr>
+                            <tr><th>Professor</th><td>@professorName <span class="text-muted">(@if (!string.IsNullOrWhiteSpace(professorEmail) && professorEmail != "Not available") { <a href="mailto:@professorEmail">@professorEmail</a> } else { <span class="text-muted">Not available</span> })</span></td></tr>
+                            @if (!string.IsNullOrWhiteSpace(presentationDate))
+                            {
+                                var parts = presentationDate.Split('|');
+                                if (parts.Length == 3)
+                                {
+                                    <tr><th>Presentation Date</th><td><span class="badge bg-success">@parts[0] (@parts[1] - @parts[2])</span></td></tr>
+                                }
+                                else
+                                {
+                                    <tr><th>Presentation Date</th><td><span class="badge bg-success">@presentationDate</span></td></tr>
+                                }
+                            }
+                            <tr><th>Uploaded Project File</th><td>
+                                @if (file != null)
+                                {
+                                    <div><strong>Description:</strong> @file["Description"]</div>
+                                    <a href="@file["FileUrl"]" class="btn btn-outline-primary" target="_blank"><i class="bi bi-file-earmark-arrow-down"></i> Download</a>
+                                }
+                                else
+                                {
+                                    <span class="text-muted">No project file uploaded yet.</span>
+                                }
+                            </td></tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 }

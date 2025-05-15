@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace SoftwareProject.Controllers
@@ -94,10 +95,12 @@ namespace SoftwareProject.Controllers
                 using var fileStream = file.OpenReadStream();
 
                 var storageObject = await _storageClient.UploadObjectAsync(Bucket, fileName, file.ContentType, fileStream);
-                var acl = storageObject.Acl ?? new List<ObjectAccessControl>();
-                acl.Add(new ObjectAccessControl { Entity = "allUsers", Role = "READER" });
-                storageObject.Acl = acl;
+                storageObject.Acl = new List<ObjectAccessControl>
+                {
+                    new ObjectAccessControl { Entity = "allUsers", Role = "READER" }
+                };
                 await _storageClient.UpdateObjectAsync(storageObject);
+
                 downloadUrl = $"https://storage.googleapis.com/{Bucket}/{fileName}";
             }
 
@@ -118,9 +121,6 @@ namespace SoftwareProject.Controllers
             return RedirectToAction("File");
         }
 
-       
-
-
         public async Task<IActionResult> Results()
         {
             string username = HttpContext.Session.GetString("Username");
@@ -133,19 +133,63 @@ namespace SoftwareProject.Controllers
             var docRef = db.Collection("evaluation-project").Document("Evaluation").Collection("results").Document(username);
             var snapshot = await docRef.GetSnapshotAsync();
 
+            string professorId = null;
+            string professorEmail = null;
+            double totalPercent = 0;
+            string comment = "";
             if (snapshot.Exists)
             {
-                ViewBag.TotalGrateToPercent = snapshot.GetValue<int>("totalGrateToPercent");
-                ViewBag.ProfEm = snapshot.GetValue<string>("prefossorEmail");
-                ViewBag.GenelYorum = snapshot.GetValue<string>("text22");
-            }
-            else
-            {
-                ViewBag.TotalGrateToPercent = "Document not found";
+                var data = snapshot.ToDictionary();
+                // Get projectId from results document
+                string projectId = data.ContainsKey("projectId") ? data["projectId"]?.ToString() : null;
+                if (!string.IsNullOrEmpty(projectId))
+                {
+                    // Fetch the project document to get the professor ID
+                    var projectDoc = await db.Collection("evaluation-project")
+                        .Document("ProjectList")
+                        .Collection("Projects")
+                        .Document(projectId)
+                        .GetSnapshotAsync();
+                    if (projectDoc.Exists)
+                    {
+                        var projectData = projectDoc.ToDictionary();
+                        professorId = projectData.ContainsKey("professorEmail") ? projectData["professorEmail"]?.ToString() : null;
+                    }
+                }
+                // Fallback to primaryTeacherEmail if project lookup fails
+                if (string.IsNullOrEmpty(professorId))
+                    professorId = data.ContainsKey("primaryTeacherEmail") ? data["primaryTeacherEmail"]?.ToString() : null;
+                totalPercent = data.ContainsKey("totalGrateToPercent") ? Convert.ToDouble(data["totalGrateToPercent"]) : 0;
+                comment = data.ContainsKey("text22") ? data["text22"]?.ToString() : "";
+
+                // Fetch professor email from Academician collection
+                if (!string.IsNullOrEmpty(professorId))
+                {
+                    var profDoc = await db.Collection("evaluation-project")
+                                          .Document("Professor")
+                                          .Collection("Academician")
+                                          .Document(professorId)
+                                          .GetSnapshotAsync();
+                    if (profDoc.Exists)
+                    {
+                        var profData = profDoc.ToDictionary();
+                        professorEmail = profData.ContainsKey("Mail") && !string.IsNullOrWhiteSpace(profData["Mail"]?.ToString())
+                            ? profData["Mail"]?.ToString()
+                            : "Not available";
+                    }
+                    else
+                    {
+                        professorEmail = "Not available";
+                    }
+                }
             }
 
+            ViewBag.ProfEm = professorEmail;
+            ViewBag.TotalGrateToPercent = totalPercent;
+            ViewBag.GenelYorum = comment;
             return View();
         }
+
         [HttpGet]
         public async Task<IActionResult> MyProject()
         {
@@ -153,22 +197,50 @@ namespace SoftwareProject.Controllers
             if (string.IsNullOrEmpty(studentId))
                 return RedirectToAction("Login", "Login");
 
-            // Get approved project info
             var projectSnapshot = await db.Collection("evaluation-project")
                                           .Document("ProjectList")
                                           .Collection("Projects")
                                           .GetSnapshotAsync();
 
             dynamic projectData = null;
+            string professorName = null;
+            string professorEmail = null;
             foreach (var doc in projectSnapshot.Documents)
             {
                 var data = doc.ToDictionary();
                 if (data.ContainsKey("enrolled") && ((List<object>)data["enrolled"]).Contains(studentId))
                 {
+                    string profId = data.GetValueOrDefault("professorEmail", "N/A").ToString();
+                    // Fetch professor info
+                    var profDoc = await db.Collection("evaluation-project")
+                        .Document("Professor")
+                        .Collection("Academician")
+                        .Document(profId)
+                        .GetSnapshotAsync();
+                    if (profDoc.Exists)
+                    {
+                        var profData = profDoc.ToDictionary();
+                        professorName = (profData.ContainsKey("First Name") ? profData["First Name"]?.ToString() : "") +
+                                        " " + (profData.ContainsKey("Last Name") ? profData["Last Name"]?.ToString() : "");
+                        // Try all possible keys for the email field
+                        string email = null;
+                        if (profData.ContainsKey("Mail") && !string.IsNullOrWhiteSpace(profData["Mail"]?.ToString()))
+                            email = profData["Mail"]?.ToString();
+                        else if (profData.ContainsKey("mail") && !string.IsNullOrWhiteSpace(profData["mail"]?.ToString()))
+                            email = profData["mail"]?.ToString();
+                        else if (profData.ContainsKey("email") && !string.IsNullOrWhiteSpace(profData["email"]?.ToString()))
+                            email = profData["email"]?.ToString();
+                        professorEmail = !string.IsNullOrWhiteSpace(email) ? email : "Not available";
+                    }
+                    else
+                    {
+                        professorName = profId;
+                        professorEmail = "Not available";
+                    }
                     projectData = new
                     {
                         Title = data.GetValueOrDefault("title", "N/A").ToString(),
-                        Professor = data.GetValueOrDefault("professorEmail", "N/A").ToString(),
+                        Professor = profId,
                         ProjectId = doc.Id
                     };
                     break;
@@ -177,11 +249,10 @@ namespace SoftwareProject.Controllers
 
             if (projectData == null)
             {
-                TempData["Error"] = "You are not enrolled in any project.";
-                return RedirectToAction("Index");
+                ViewBag.NotEnrolled = true;
+                return View();
             }
 
-            // Get uploaded file info
             var fileSnapshot = await db.Collection("evaluation-project")
                                        .Document("Evaluation")
                                        .Collection("Projects")
@@ -190,7 +261,6 @@ namespace SoftwareProject.Controllers
 
             var fileData = fileSnapshot.Exists ? fileSnapshot.ToDictionary() : null;
 
-            // Get presentation schedule
             var scheduleSnapshot = await db.Collection("evaluation-project")
                                            .Document("Evaluation")
                                            .Collection("results")
@@ -199,15 +269,16 @@ namespace SoftwareProject.Controllers
 
             string presentationDate = scheduleSnapshot.Exists && scheduleSnapshot.ContainsField("presentationDate")
                 ? scheduleSnapshot.GetValue<string>("presentationDate")
-                : "Not Assigned";
+                : null;
 
             ViewBag.Project = projectData;
             ViewBag.File = fileData;
             ViewBag.PresentationDate = presentationDate;
+            ViewBag.ProfessorName = professorName;
+            ViewBag.ProfessorEmail = professorEmail;
 
             return View();
         }
-
 
         public IActionResult NecessaryDocument() => View();
         public IActionResult DownloadCriteria() => ServeFile("evaluationCriteria.pdf", "application/pdf");
@@ -233,5 +304,4 @@ namespace SoftwareProject.Controllers
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
     }
-
 }

@@ -6,6 +6,9 @@ using Microsoft.AspNetCore.Http;
 using Google.Cloud.Firestore;
 using Google.Cloud.Firestore.V1;
 using System.IO;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using System.Security.Claims;
 
 namespace SoftwareProject.Controllers
 {
@@ -47,7 +50,7 @@ namespace SoftwareProject.Controllers
                     }
                 }
 
-                // Try Teacher Login from Firestore
+                // Try Admin Login from Firestore
                 string path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "evaluation-project-31025-firebase-adminsdk-fbsvc-3e3d6a6377.json");
 
                 FirestoreDb db = FirestoreDb.Create("evaluation-project-31025", new FirestoreClientBuilder
@@ -55,6 +58,40 @@ namespace SoftwareProject.Controllers
                     CredentialsPath = path
                 }.Build());
 
+                DocumentReference adminDocRef = db
+                    .Collection("evaluation-project")
+                    .Document("Admin");
+
+                DocumentSnapshot adminSnapshot = await adminDocRef.GetSnapshotAsync();
+                if (adminSnapshot.Exists)
+                {
+                    string adminUser = adminSnapshot.GetValue<string>("User Name");
+                    string adminPass = adminSnapshot.GetValue<string>("Password");
+                    if (username == adminUser && password == adminPass)
+                    {
+                        var claims = new List<Claim>
+                        {
+                            new Claim(ClaimTypes.Name, username),
+                            new Claim(ClaimTypes.Role, "Admin")
+                        };
+                        var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+                        var authProperties = new AuthenticationProperties
+                        {
+                            IsPersistent = true
+                        };
+
+                        await HttpContext.SignInAsync(
+                            CookieAuthenticationDefaults.AuthenticationScheme,
+                            new ClaimsPrincipal(claimsIdentity),
+                            authProperties);
+
+                        HttpContext.Session.SetString("Username", username);
+                        HttpContext.Session.SetString("Role", "Admin");
+                        return RedirectToAction("Dashboard", "Admin");
+                    }
+                }
+
+                // Try Teacher Login from Firestore
                 DocumentReference docRef = db
                     .Collection("evaluation-project")
                     .Document("Professor")
@@ -64,7 +101,7 @@ namespace SoftwareProject.Controllers
                 DocumentSnapshot snapshot = await docRef.GetSnapshotAsync();
                 if (!snapshot.Exists)
                 {
-                    TempData["Error"] = "Login failed for both Student and Teacher.";
+                    TempData["Error"] = "Login failed for all user types.";
                     return RedirectToAction("Login");
                 }
 

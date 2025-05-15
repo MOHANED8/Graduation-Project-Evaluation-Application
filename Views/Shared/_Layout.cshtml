@@ -37,9 +37,11 @@
                     <!-- Dynamic Home link -->
                     <li>
                         <a style="color: white;" href="@(
-                            Context.Session.GetString("Role") == "Teacher"
-                                ? Url.Action("Dashboard", "Teacher")
-                                : Url.Action("Index", "Home")
+                            Context.Session.GetString("Role") == "Admin"
+                                ? Url.Action("Dashboard", "Admin")
+                                : Context.Session.GetString("Role") == "Teacher"
+                                    ? Url.Action("Dashboard", "Teacher")
+                                    : Url.Action("Index", "Home")
                         )">Home</a>
                     </li>
 

@@ -1,39 +1,88 @@
 ﻿@{
     ViewData["Title"] = "Project Results";
     Layout = "~/Views/Shared/_Layout.cshtml";
+    var professorEmail = ViewBag.ProfEm as string;
+    var totalGrade = ViewBag.TotalGrateToPercent ?? 0;
+    var comment = ViewBag.GenelYorum as string ?? "No comment.";
 }
 
-<!-- Outer container adds spacing from navbar and footer -->
-<div class="container mt-5 pt-5 mb-5">
-    <div class="card shadow-lg">
-        <div class="card-header text-white text-center d-flex align-items-center justify-content-center"
-             style="height: 80px; background-color: #40E0D0;">
-            <span style="font-size: 1.5rem;">⭐</span>
-            <h2 class="mb-0 ms-2">Project Results</h2>
-        </div>
+<style>
+    .modern-table-modal {
+        width: 100%;
+        max-width: 700px;
+        margin: 48px auto 0 auto;
+        table-layout: fixed;
+        background: #f8fbff;
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+        font-size: 1.5rem;
+    }
+    .modern-table-modal th,
+    .modern-table-modal td {
+        padding: 22px 22px;
+        vertical-align: middle;
+        font-size: 1.5rem;
+    }
+    .modern-table-modal th {
+        background: #00bfff;
+        color: #fff;
+        font-weight: 600;
+        font:bold;
+        border-bottom: 2px solid #b6e0fe;
+        font-size: 1.5rem;
+    }
+    .modern-table-modal tbody tr {
+        transition: background 0.2s;
+    }
+    .modern-table-modal tbody tr:hover {
+        background: #eaf6ff;
+    }
+    .card-header.bg-info.text-white.text-center h3 {
+        font-size: 1.5rem;
+    }
+    .display-6.fw-bold.text-success {
+        font-size: 3.5rem;
+    }
+    .btn.btn-outline-primary.btn-lg {
+        font-size: 1.5rem;
+        padding: 12px 36px;
+    }
+    .card-body, .card {
+        font-size: 1.5rem;
+    }
+</style>
 
-        <div class="card-body">
-            <div class="mb-4">
-                <h4 class="text-secondary">Total Grade to Percent:</h4>
-                <p class="fs-4 fw-bold text-dark">@ViewBag.TotalGrateToPercent%</p>
-            </div>
-
-            <div class="mb-4">
-                <h4 class="text-secondary">Professor Information:</h4>
-                <p class="mb-1">
-                    Email: <a href="mailto:@ViewBag.ProfEm" class="text-primary">@ViewBag.ProfEm</a>
-                </p>
-            </div>
-
-            <div class="mb-4">
-                <h4 class="text-secondary">Professor Comment:</h4>
-                <p class="fst-italic">Comment: @ViewBag.GenelYorum</p>
-            </div>
-
-            <div class="text-center">
-                <a href="@Url.Action("Index", "Home")" class="btn btn-outline-primary mt-3">
-                    <i class="bi bi-arrow-left-circle"></i> Back to Home
-                </a>
+<div class="container mt-5 pt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-lg">
+                <div class="card-header bg-info text-white text-center">
+                    <h3 class="mb-0"><span style="font-size:1.5rem;">⭐</span> Project Results</h3>
+                </div>
+                <div class="card-body">
+                    <h4 class="mb-3">Total Grade to Percent:</h4>
+                    <p class="display-6 fw-bold text-success">@totalGrade%</p>
+                    <hr />
+                    <h5>Professor Information:</h5>
+                    <p>
+                        <strong>Email:</strong>
+                        @if (!string.IsNullOrWhiteSpace(professorEmail) && professorEmail != "Not available")
+                        {
+                            <a href="mailto:@professorEmail">@professorEmail</a>
+                        }
+                        else
+                        {
+                            <span class="text-muted">Not available</span>
+                        }
+                    </p>
+                    <hr />
+                    <h5>Professor Comment:</h5>
+                    <p class="fst-italic">@comment</p>
+                    <div class="text-center mt-4">
+                        <a href="/Home/Index" class="btn btn-outline-primary btn-lg">Back to Home</a>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

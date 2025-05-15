@@ -1,0 +1,476 @@
+@model List<SoftwareProject.Models.AdminUserModel>
+@{
+    ViewData["Title"] = "Teacher Control";
+}
+
+<style>
+    .modern-table {
+        width: 100%;
+        table-layout: fixed;
+        background: #f8fbff;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    }
+    .modern-table th,
+    .modern-table td {
+        padding: 14px 10px;
+        vertical-align: middle;
+        font-size: 1rem;
+    }
+    .modern-table th:nth-child(1),
+    .modern-table td:nth-child(1) { /* Name */
+        width: 50%;
+        min-width: 250px;
+    }
+    .modern-table th:nth-child(2),
+    .modern-table td:nth-child(2) { /* Email */
+        width: 260px;
+        min-width: 180px;
+    }
+    .modern-table th:nth-child(3),
+    .modern-table td:nth-child(3) { /* Role */
+        width: 100px;
+        min-width: 80px;
+    }
+    .modern-table th:nth-child(4),
+    .modern-table td:nth-child(4) { /* Status */
+        width: 100px;
+        min-width: 80px;
+    }
+    .modern-table th:nth-child(5),
+    .modern-table td:nth-child(5) { /* Actions */
+        width: 250px;
+        min-width: 200px;
+    }
+    .modern-table th {
+        background: #00bfff;
+        color: #fff;
+        font-weight: 600;
+        border-bottom: 2px solid #b6e0fe;
+    }
+    .modern-table tbody tr {
+        transition: background 0.2s;
+    }
+    .modern-table tbody tr:hover {
+        background: #eaf6ff;
+    }
+    .badge-status {
+        font-size: 0.95em;
+        padding: 6px 14px;
+        border-radius: 20px;
+        font-weight: 500;
+        color: #fff;
+        display: inline-block;
+    }
+    .badge-status.active { background: #28a745; }
+    .badge-status.inactive { background: #dc3545; }
+    .action-btn {
+        border: none;
+        border-radius: 6px;
+        padding: 6px 10px;
+        margin: 0 2px;
+        font-size: 1.1em;
+        cursor: pointer;
+        color: #fff;
+        transition: background 0.2s;
+    }
+    .action-btn.view { background: #17a2b8; }
+    .action-btn.edit { background: #ffc107; color: #222; }
+    .action-btn.delete { background: #dc3545; }
+    .action-btn.password { background: #6c757d; }
+    .action-btn.lock { background: #dc3545; }
+    .action-btn.unlock { background: #28a745; }
+    .action-btn:hover { opacity: 0.85; }
+    .modern-table .form-select-sm { min-width: 90px; }
+    /* Modal Table Styling */
+    .modern-table-modal {
+        width: 100%;
+        table-layout: fixed;
+        background: #f8fbff;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    }
+    .modern-table-modal th,
+    .modern-table-modal td {
+        padding: 12px 8px;
+        vertical-align: middle;
+        font-size: 0.98rem;
+    }
+    .modern-table-modal th {
+        background: #00bfff;
+        color: #fff;
+        font-weight: 600;
+        border-bottom: 2px solid #b6e0fe;
+    }
+    .modern-table-modal tbody tr {
+        transition: background 0.2s;
+    }
+    .modern-table-modal tbody tr:hover {
+        background: #eaf6ff;
+    }
+</style>
+
+<div class="container mt-5 pt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Teacher Control</h2>
+        <div>
+            <a class="btn btn-success me-2" href="@Url.Action("ExportTeachers", "Admin")">
+                <i class="fa fa-download"></i> Export Teachers
+            </a>
+            <form asp-action="ImportTeachers" method="post" enctype="multipart/form-data" style="display:inline;">
+                <label class="btn btn-secondary me-2 mb-0">
+                    <i class="fa fa-upload"></i> Import Teachers
+                    <input type="file" name="csvFile" accept=".csv" style="display:none;" onchange="this.form.submit()" />
+                </label>
+            </form>
+            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addTeacherModal">
+                <i class="fa fa-plus"></i> Add New Teacher
+            </button>
+            <button class="btn btn-info me-2" data-bs-toggle="modal" data-bs-target="#sendNotificationModal">
+                <i class="fa fa-bell"></i> Send Notification
+            </button>
+        </div>
+    </div>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            @TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            @TempData["Error"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <!-- Teachers Table -->
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="modern-table table table-bordered mb-0">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Role</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var teacher in Model)
+                        {
+                            <tr>
+                                <td>@teacher.FirstName @teacher.LastName</td>
+                                <td>@teacher.Email</td>
+                                <td>@teacher.Role</td>
+                                <td>
+                                    <span class="badge-status @(teacher.IsActive ? "active" : "inactive")">
+                                        @(teacher.IsActive ? "Active" : "Inactive")
+                                    </span>
+                                </td>
+                                <td>
+                                    <div class="btn-group">
+                                        <button class="action-btn view" onclick="viewTeacherDetails('@teacher.Id')" title="View"><i class="fa fa-eye"></i></button>
+                                        <button class="action-btn edit" onclick="editTeacher('@teacher.Id')" title="Edit Teacher"><i class="fa fa-edit"></i></button>
+                                        <button class="action-btn delete" onclick="deleteTeacher('@teacher.Id')" title="Delete Teacher"><i class="fa fa-trash"></i></button>
+                                        <button class="action-btn password" onclick="resetTeacherPassword('@teacher.Id')" title="Reset Password"><i class="fa fa-key"></i></button>
+                                        <button class="action-btn @(teacher.IsActive ? "lock" : "unlock")" onclick="toggleTeacherStatus('@teacher.Id', @(teacher.IsActive.ToString().ToLower()))" title="@(teacher.IsActive ? "Lock" : "Unlock")">
+                                            <i class="fa @(teacher.IsActive ? "fa-lock" : "fa-unlock")"></i>
+                                        </button>
+                                        <form asp-action="ChangeUserRole" method="post" style="display:inline;">
+                                            <input type="hidden" name="id" value="@teacher.Id" />
+                                            <input type="hidden" name="userType" value="Teacher" />
+                                            <select name="newRole" onchange="this.form.submit()" class="form-select form-select-sm d-inline w-auto ms-1">
+                                                <option value="Teacher" selected="@(teacher.Role == "Teacher")">Teacher</option>
+                                                <option value="Admin" selected="@(teacher.Role == "Admin")">Admin</option>
+                                            </select>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Teacher Modal -->
+<div class="modal fade" id="addTeacherModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add New Teacher</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form asp-action="AddTeacher" method="post">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Teacher ID</label>
+                        <input type="text" class="form-control" name="TeacherId" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">First Name</label>
+                        <input type="text" class="form-control" name="FirstName" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Last Name</label>
+                        <input type="text" class="form-control" name="LastName" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Email</label>
+                        <input type="email" class="form-control" name="Email" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Password</label>
+                        <input type="password" class="form-control" name="Password" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Add Teacher</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Send Notification Modal -->
+<div class="modal fade" id="sendNotificationModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Send Notification to Teachers</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form asp-action="SendNotification" method="post">
+                <input type="hidden" name="userType" value="Teacher" />
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Select Teachers</label>
+                        <div class="row">
+                            @foreach (var teacher in Model)
+                            {
+                                <div class="col-md-4 mb-2">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="userIds" value="@teacher.Id" id="notif-teacher-@teacher.Id" />
+                                        <label class="form-check-label" for="notif-teacher-@teacher.Id">
+                                            @teacher.FirstName @teacher.LastName (@teacher.Email)
+                                        </label>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Subject</label>
+                        <input type="text" class="form-control" name="subject" required />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Message</label>
+                        <textarea class="form-control" name="message" rows="4" required></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Send Notification</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- View Teacher Modal -->
+<div class="modal fade" id="viewTeacherModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header"><h5 class="modal-title">Teacher Info</h5></div>
+      <div class="modal-body" id="teacherInfoBody">
+        <!-- If you use a table here, add class modern-table-modal -->
+      </div>
+      <div class="modal-footer"><button class="btn btn-secondary" data-bs-dismiss="modal">Close</button></div>
+    </div>
+  </div>
+</div>
+
+<!-- Edit Teacher Modal -->
+<div class="modal fade" id="editTeacherModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form id="editTeacherForm">
+        <div class="modal-header"><h5 class="modal-title">Edit Teacher</h5></div>
+        <div class="modal-body">
+          <input type="hidden" id="editTeacherId" name="id">
+          <table class="modern-table-modal table table-bordered mb-0">
+            <tr><th>First Name</th><td><input type="text" class="form-control" id="editFirstName" name="firstName"></td></tr>
+            <tr><th>Last Name</th><td><input type="text" class="form-control" id="editLastName" name="lastName"></td></tr>
+            <tr><th>Email</th><td><input type="email" class="form-control" id="editEmail" name="email"></td></tr>
+          </table>
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-primary">Save</button>
+          <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Change Password Modal -->
+<div class="modal fade" id="changePasswordModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form id="changePasswordForm">
+        <div class="modal-header"><h5 class="modal-title">Change Password</h5></div>
+        <div class="modal-body">
+          <input type="hidden" id="changePasswordTeacherId" name="id">
+          <table class="modern-table-modal table table-bordered mb-0">
+            <tr><th>New Password</th><td><input type="password" class="form-control" id="newPassword" name="newPassword"></td></tr>
+          </table>
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-primary">Change</button>
+          <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Custom Delete Confirmation Modal -->
+<div class="modal fade" id="deleteConfirmModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header" style="background:#00bfff;color:#fff;">
+        <h5 class="modal-title">Confirm Delete</h5>
+      </div>
+      <div class="modal-body">
+        Are you sure you want to delete this teacher?
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-danger" id="confirmDeleteBtn">Delete</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Custom Status Confirmation Modal -->
+<div class="modal fade" id="statusConfirmModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header" style="background:#00bfff;color:#fff;">
+        <h5 class="modal-title">Confirm Status Change</h5>
+      </div>
+      <div class="modal-body" id="statusConfirmBody">
+        <!-- Status message will be set dynamically -->
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-primary" id="confirmStatusBtn">Yes</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+@section Scripts {
+    <script>
+        let teacherIdToDelete = null;
+        let teacherIdToStatus = null;
+        let newStatusValue = null;
+        // View
+        function viewTeacherDetails(teacherId) {
+            $.get('/Admin/GetTeacherDetails', { id: teacherId }, function(data) {
+                console.log('DEBUG: Teacher details response:', data);
+                if (data && data.success === false) {
+                    $('#teacherInfoBody').html('<span class="text-danger">' + (data.message || 'Could not load teacher info.') + '</span>');
+                } else {
+                    $('#teacherInfoBody').html(
+                        `<table class="modern-table-modal table table-bordered mb-0">
+                            <tr><th style='width:120px;'>ID</th><td>${data.id || data.Id}</td></tr>
+                            <tr><th>Name</th><td>${(data.firstName || data.FirstName) || ''} ${(data.lastName || data.LastName) || ''}</td></tr>
+                            <tr><th>Email</th><td>${(data.email || data.Email) || ''}</td></tr>
+                            <tr><th>Status</th><td>${(data.isActive !== undefined ? (data.isActive ? 'Active' : 'Inactive') : (data.IsActive ? 'Active' : 'Inactive'))}</td></tr>
+                        </table>`
+                    );
+                }
+                $('#viewTeacherModal').modal('show');
+            });
+        }
+
+        // Edit
+        function editTeacher(teacherId) {
+            $.get('/Admin/GetTeacherDetails', { id: teacherId }, function(data) {
+                if (data && data.success === false) {
+                    alert(data.message || 'Could not load teacher info for editing.');
+                } else {
+                    $('#editTeacherId').val(data.id || data.Id);
+                    $('#editFirstName').val(data.firstName || data.FirstName);
+                    $('#editLastName').val(data.lastName || data.LastName);
+                    $('#editEmail').val(data.email || data.Email);
+                    $('#editTeacherModal').modal('show');
+                }
+            });
+        }
+        $('#editTeacherForm').submit(function(e) {
+            e.preventDefault();
+            $.post('/Admin/EditTeacher', $(this).serialize(), function(resp) {
+                if (resp.success) location.reload();
+                else alert('Error: ' + (resp.message || 'Could not update teacher.'));
+            });
+        });
+
+        // Delete
+        function deleteTeacher(teacherId) {
+            teacherIdToDelete = teacherId;
+            $('#deleteConfirmModal').modal('show');
+        }
+        $('#confirmDeleteBtn').click(function() {
+            if (teacherIdToDelete) {
+                $.post('/Admin/DeleteTeacher', { id: teacherIdToDelete }, function(resp) {
+                    if (resp.success) location.reload();
+                    else alert('Error: ' + (resp.message || 'Could not delete teacher.'));
+                });
+                $('#deleteConfirmModal').modal('hide');
+            }
+        });
+
+        // Change Password
+        function resetTeacherPassword(teacherId) {
+            $('#changePasswordTeacherId').val(teacherId);
+            $('#changePasswordModal').modal('show');
+        }
+        $('#changePasswordForm').submit(function(e) {
+            e.preventDefault();
+            $.post('/Admin/ChangeTeacherPassword', $(this).serialize(), function() {
+                location.reload();
+            });
+        });
+
+        // Activate/Deactivate
+        function toggleTeacherStatus(teacherId, currentStatus) {
+            teacherIdToStatus = teacherId;
+            newStatusValue = !currentStatus;
+            var actionText = currentStatus ? 'deactivate' : 'activate';
+            $('#statusConfirmBody').text('Are you sure you want to ' + actionText + ' this teacher?');
+            $('#statusConfirmModal').modal('show');
+        }
+        $('#confirmStatusBtn').click(function() {
+            if (teacherIdToStatus !== null) {
+                $.post('/Admin/UpdateTeacherStatus', { teacherId: teacherIdToStatus, isActive: newStatusValue }, function() {
+                    location.reload();
+                });
+                $('#statusConfirmModal').modal('hide');
+            }
+        });
+    </script>
+} 

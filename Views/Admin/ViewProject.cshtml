@@ -1,0 +1,50 @@
+@model SoftwareProject.Models.ProjectModel
+@{
+    ViewData["Title"] = "Project Details";
+}
+
+<style>
+    .modern-table-modal {
+        width: 100%;
+        table-layout: fixed;
+        background: #f8fbff;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    }
+    .modern-table-modal th,
+    .modern-table-modal td {
+        padding: 12px 8px;
+        vertical-align: middle;
+        font-size: 0.98rem;
+    }
+    .modern-table-modal th {
+        background: #00bfff;
+        color: #fff;
+        font-weight: 600;
+        border-bottom: 2px solid #b6e0fe;
+    }
+    .modern-table-modal tbody tr {
+        transition: background 0.2s;
+    }
+    .modern-table-modal tbody tr:hover {
+        background: #eaf6ff;
+    }
+</style>
+
+<div class="container mt-5 pt-4">
+    <h2>Project Details</h2>
+    <div class="card mt-4">
+        <div class="card-body">
+            <h4 class="card-title">@Model.Title</h4>
+            <table class="modern-table-modal table table-bordered mb-0" style="max-width:600px;">
+                <tr><th style="width:180px;">Description</th><td>@Model.Description</td></tr>
+                <tr><th>Professor Email</th><td>@Model.ProfessorEmail</td></tr>
+                <tr><th>Total Slots</th><td>@Model.TotalSlots</td></tr>
+                <tr><th>Enrolled Students</th><td>@string.Join(", ", Model.Enrolled)</td></tr>
+                <tr><th>Requested Students</th><td>@string.Join(", ", Model.Requested)</td></tr>
+            </table>
+            <a href="@Url.Action("ProjectManagement", "Admin")" class="btn btn-secondary mt-3">Back to Project Management</a>
+        </div>
+    </div>
+</div> 

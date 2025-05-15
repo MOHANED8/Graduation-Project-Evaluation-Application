@@ -1,0 +1,291 @@
+@model List<SoftwareProject.Models.AdminUserModel>
+@{
+    ViewData["Title"] = "Student Control";
+}
+
+<div class="container mt-5 pt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Student Control</h2>
+        <div>
+            <a class="btn btn-success me-2" href="@Url.Action("ExportStudents", "Admin")">
+                <i class="fa fa-download"></i> Export Students
+            </a>
+            <form asp-action="ImportStudents" method="post" enctype="multipart/form-data" style="display:inline;">
+                <label class="btn btn-secondary me-2 mb-0">
+                    <i class="fa fa-upload"></i> Import Students
+                    <input type="file" name="csvFile" accept=".csv" style="display:none;" onchange="this.form.submit()" />
+                </label>
+            </form>
+            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addStudentModal">
+                <i class="fa fa-plus"></i> Add New Student
+            </button>
+            <button class="btn btn-info me-2" data-bs-toggle="modal" data-bs-target="#sendNotificationModal">
+                <i class="fa fa-bell"></i> Send Notification
+            </button>
+        </div>
+    </div>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            @TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            @TempData["Error"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <!-- Students Table -->
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Role</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var student in Model)
+                        {
+                            <tr>
+                                <td>@student.FirstName @student.LastName</td>
+                                <td>@student.Email</td>
+                                <td>@student.Role</td>
+                                <td>
+                                    <span class="badge @(student.IsActive ? "bg-success" : "bg-danger")">
+                                        @(student.IsActive ? "Active" : "Inactive")
+                                    </span>
+                                </td>
+                                <td>
+                                    <div class="btn-group">
+                                        <button class="btn btn-info" onclick="viewStudentDetails('@student.Id')"><i class="fa fa-eye"></i></button>
+                                        <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#editStudentModal-@student.Id"><i class="fa fa-edit"></i></button>
+                                        <form asp-action="DeleteStudent" method="post" style="display:inline;">
+                                            <input type="hidden" name="id" value="@student.Id" />
+                                            <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this student?');"><i class="fa fa-trash"></i></button>
+                                        </form>
+                                        <button class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#resetPasswordModal-@student.Id"><i class="fa fa-key"></i></button>
+                                        <form asp-action="ToggleAccountStatus" method="post" style="display:inline;">
+                                            <input type="hidden" name="id" value="@student.Id" />
+                                            <input type="hidden" name="userType" value="Student" />
+                                            <input type="hidden" name="isActive" value="@(!student.IsActive)" />
+                                            <button type="submit" class="btn @(student.IsActive ? "btn-danger" : "btn-success")" title="@(student.IsActive ? "Lock" : "Unlock")">
+                                                <i class="fa @(student.IsActive ? "fa-lock" : "fa-unlock")"></i>
+                                            </button>
+                                        </form>
+                                        <form asp-action="ChangeUserRole" method="post" style="display:inline;">
+                                            <input type="hidden" name="id" value="@student.Id" />
+                                            <input type="hidden" name="userType" value="Student" />
+                                            <select name="newRole" onchange="this.form.submit()" class="form-select form-select-sm d-inline w-auto ms-1">
+                                                <option value="Student" selected="@(student.Role == "Student")">Student</option>
+                                                <option value="Admin" selected="@(student.Role == "Admin")">Admin</option>
+                                            </select>
+                                        </form>
+                                    </div>
+                                    <!-- Reset Password Modal -->
+                                    <div class="modal fade" id="resetPasswordModal-@student.Id" tabindex="-1">
+                                        <div class="modal-dialog">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title">Reset Password</h5>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                                </div>
+                                                <form asp-action="ResetPassword" method="post">
+                                                    <input type="hidden" name="id" value="@student.Id" />
+                                                    <input type="hidden" name="userType" value="Student" />
+                                                    <div class="modal-body">
+                                                        <div class="mb-3">
+                                                            <label class="form-label">New Password</label>
+                                                            <input type="password" class="form-control" name="newPassword" required />
+                                                        </div>
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                                        <button type="submit" class="btn btn-primary">Reset Password</button>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- Edit Modal (optional, for future use) -->
+                                    <div class="modal fade" id="editStudentModal-@student.Id" tabindex="-1">
+                                        <div class="modal-dialog">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title">Edit Student</h5>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                                </div>
+                                                <form asp-action="EditStudent" method="post">
+                                                    <input type="hidden" name="id" value="@student.Id" />
+                                                    <div class="modal-body">
+                                                        <div class="mb-3">
+                                                            <label class="form-label">First Name</label>
+                                                            <input type="text" class="form-control" name="firstName" value="@student.FirstName" required />
+                                                        </div>
+                                                        <div class="mb-3">
+                                                            <label class="form-label">Last Name</label>
+                                                            <input type="text" class="form-control" name="lastName" value="@student.LastName" required />
+                                                        </div>
+                                                        <div class="mb-3">
+                                                            <label class="form-label">Email</label>
+                                                            <input type="email" class="form-control" name="email" value="@student.Email" required />
+                                                        </div>
+                                                        <div class="mb-3">
+                                                            <label class="form-label">Department</label>
+                                                            <input type="text" class="form-control" name="department" value="@student.Department" />
+                                                        </div>
+                                                        <div class="mb-3">
+                                                            <label class="form-label">Phone</label>
+                                                            <input type="text" class="form-control" name="phone" value="@student.Phone" />
+                                                        </div>
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                                        <button type="submit" class="btn btn-primary">Save Changes</button>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Student Modal -->
+<div class="modal fade" id="addStudentModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add New Student</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form asp-action="AddStudent" method="post">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Student ID</label>
+                        <input type="text" class="form-control" name="StudentId" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">First Name</label>
+                        <input type="text" class="form-control" name="FirstName" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Last Name</label>
+                        <input type="text" class="form-control" name="LastName" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Password</label>
+                        <input type="password" class="form-control" name="Password" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Add Student</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Send Notification Modal -->
+<div class="modal fade" id="sendNotificationModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Send Notification to Students</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form asp-action="SendNotification" method="post">
+                <input type="hidden" name="userType" value="Student" />
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Select Students</label>
+                        <div class="row">
+                            @foreach (var student in Model)
+                            {
+                                <div class="col-md-4 mb-2">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="userIds" value="@student.Id" id="notif-student-@student.Id" />
+                                        <label class="form-check-label" for="notif-student-@student.Id">
+                                            @student.FirstName @student.LastName (@student.Email)
+                                        </label>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Subject</label>
+                        <input type="text" class="form-control" name="subject" required />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Message</label>
+                        <textarea class="form-control" name="message" rows="4" required></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Send Notification</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function viewStudentDetails(studentId) {
+            // Implement view student details functionality
+            console.log('View student:', studentId);
+        }
+
+        function editStudent(studentId) {
+            // Implement edit student functionality
+            console.log('Edit student:', studentId);
+        }
+
+        function toggleStudentStatus(studentId, currentStatus) {
+            if (confirm('Are you sure you want to ' + (currentStatus ? 'deactivate' : 'activate') + ' this student?')) {
+                fetch('/Admin/UpdateStudentStatus', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        studentId: studentId,
+                        isActive: !currentStatus
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        location.reload();
+                    } else {
+                        alert('Error updating student status: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Error updating student status');
+                });
+            }
+        }
+    </script>
+} 

@@ -11,15 +11,38 @@
 <div class="container mt-3">
     <p><strong>Role:</strong> @role | <strong>ID:</strong> @userId</p>
 
-    <input type="date" id="datePicker" class="form-control mb-2" />
-    <button id="addDateBtn" class="btn btn-sm btn-primary mb-3">Add Date</button>
+    <div class="row mb-3">
+        <div class="col-md-4">
+            <input type="date" id="datePicker" class="form-control" />
+        </div>
+        <div class="col-md-3">
+            <input type="time" id="startTime" class="form-control" placeholder="Start Time" />
+        </div>
+        <div class="col-md-3">
+            <input type="time" id="endTime" class="form-control" placeholder="End Time" />
+        </div>
+        <div class="col-md-2">
+            <button id="addDateBtn" class="btn btn-primary w-100">Add</button>
+        </div>
+    </div>
 
     <h4>Your Available Dates:</h4>
     <ul id="selectedDates" class="list-group">
         @foreach (var date in existingDates)
         {
+            var parts = date?.Split('|');
+            string formattedDate = "";
+            if (parts != null && parts.Length == 3)
+            {
+                var dt = DateTime.TryParse(parts[0], out var parsed) ? parsed.ToString("MMMM dd, yyyy") : parts[0];
+                formattedDate = $"{dt} ({parts[1]} - {parts[2]})";
+            }
+            else
+            {
+                formattedDate = date;
+            }
             <li class="list-group-item d-flex justify-content-between align-items-center">
-                @date
+                @formattedDate
                 <button class="btn btn-sm btn-danger" onclick="removeDate('@date')">Remove</button>
             </li>
         }
@@ -28,23 +51,72 @@
     <button id="saveBtn" class="btn btn-success mt-3">Save Availability</button>
 </div>
 
+<!-- Success Toast -->
+<div id="removeToast" class="toast align-items-center text-bg-success border-0 position-fixed bottom-0 end-0 m-4" role="alert" aria-live="assertive" aria-atomic="true" style="z-index: 9999; display:none;">
+  <div class="d-flex">
+    <div class="toast-body">
+      Removed successfully!
+    </div>
+  </div>
+</div>
+
+<!-- Add Success Toast -->
+<div id="addToast" class="toast align-items-center text-bg-success border-0 position-fixed bottom-0 end-0 m-4" role="alert" aria-live="assertive" aria-atomic="true" style="z-index: 9999; display:none;">
+  <div class="d-flex">
+    <div class="toast-body">
+      Availability added successfully!
+    </div>
+  </div>
+</div>
+
 @section Scripts {
     <script>
         const existingDates = new Set(@Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(existingDates)));
+        let removeToast = document.getElementById('removeToast');
+        let addToast = document.getElementById('addToast');
 
         document.getElementById("addDateBtn").addEventListener("click", function () {
             const date = document.getElementById("datePicker").value;
-            if (!date || existingDates.has(date)) return;
+            const startTime = document.getElementById("startTime").value;
+            const endTime = document.getElementById("endTime").value;
 
-            existingDates.add(date);
+            if (!date || !startTime || !endTime) {
+                alert("Please fill in all fields (date, start time, and end time)");
+                return;
+            }
+
+            if (startTime >= endTime) {
+                alert("End time must be after start time");
+                return;
+            }
+
+            // Remove any existing slot for the same date
+            for (let d of Array.from(existingDates)) {
+                if (d.startsWith(date + "|")) {
+                    existingDates.delete(d);
+                    // Also remove from the UI
+                    const items = document.querySelectorAll("#selectedDates li");
+                    items.forEach(li => {
+                        if (li.textContent.startsWith(date)) li.remove();
+                    });
+                }
+            }
+
+            const dateTimeKey = `${date}|${startTime}|${endTime}`;
+            existingDates.add(dateTimeKey);
 
             const li = document.createElement("li");
             li.className = "list-group-item d-flex justify-content-between align-items-center";
             li.innerHTML = `
-                ${date}
-                <button class="btn btn-sm btn-danger" onclick="removeDate('${date}')">Remove</button>
+                ${date} (${startTime} - ${endTime})
+                <button class="btn btn-sm btn-danger" onclick="removeDate('${dateTimeKey}')">Remove</button>
             `;
             document.getElementById("selectedDates").appendChild(li);
+
+            // Clear inputs
+            document.getElementById("datePicker").value = "";
+            document.getElementById("startTime").value = "";
+            document.getElementById("endTime").value = "";
         });
 
         document.getElementById("saveBtn").addEventListener("click", async function () {
@@ -57,15 +129,20 @@
 
             if (res.ok) {
                 const json = await res.json();
-                if (json.success) alert("✅ Dates saved successfully!");
-                else alert("❌ Server responded but didn't confirm success.");
+                if (json.success) {
+                    addToast.style.display = 'block';
+                    setTimeout(() => {
+                        addToast.style.display = 'none';
+                        location.reload();
+                    }, 2000);
+                } else alert("❌ Server responded but didn't confirm success.");
             } else {
                 alert("❌ Failed to save dates.");
             }
         });
 
         function removeDate(dateToRemove) {
-            if (!confirm(`Are you sure you want to remove ${dateToRemove}?`)) return;
+            if (!confirm(`Are you sure you want to remove this time slot?`)) return;
 
             fetch('/Calendar/RemoveDate', {
                 method: 'POST',
@@ -74,8 +151,12 @@
                 },
                 body: JSON.stringify(dateToRemove)
             }).then(() => {
-                alert("Removed successfully!");
-                location.reload();
+                // Show toast instead of alert
+                removeToast.style.display = 'block';
+                setTimeout(() => {
+                    removeToast.style.display = 'none';
+                    location.reload();
+                }, 2000);
             });
         }
     </script>

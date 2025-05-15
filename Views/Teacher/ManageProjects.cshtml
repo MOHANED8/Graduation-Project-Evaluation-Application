@@ -2,19 +2,19 @@
 
 <h2>Manage Projects</h2>
 
-@foreach (var project in Model)
+<div id="projectsContainer">
+@foreach (var project in Model.Where(p => p.Status == "Approved"))
 {
-    <div class="card mt-4">
+    <div class="card mt-4 project-card" data-status="@project.Status">
         <div class="card-body">
             <h5>@project.Title</h5>
             <p>@project.Description</p>
             <p><strong>Slots:</strong> @project.Enrolled.Count / @project.TotalSlots</p>
-
+            <p><strong>Status:</strong> <span class="badge @(project.Status == "Approved" ? "bg-success" : project.Status == "Completed" ? "bg-primary" : project.Status == "Archived" ? "bg-secondary" : "bg-warning")">@project.Status</span></p>
             <form asp-action="DeleteProject" method="post">
                 <input type="hidden" name="projectId" value="@project.Id" />
                 <button class="btn btn-danger">Delete Project</button>
             </form>
-
             <h6>Enrolled Students:</h6>
             @foreach (var student in project.Enrolled)
             {
@@ -27,4 +27,23 @@
             }
         </div>
     </div>
+}
+</div>
+
+@section Scripts {
+<script>
+    $(document).ready(function() {
+        $('#statusFilter').on('change', function() {
+            var selected = $(this).val();
+            $('.project-card').each(function() {
+                var status = $(this).data('status');
+                if (!selected || status === selected) {
+                    $(this).show();
+                } else {
+                    $(this).hide();
+                }
+            });
+        });
+    });
+</script>
 }

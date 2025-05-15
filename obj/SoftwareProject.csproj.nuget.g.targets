@@ -1,8 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="no"?>
 <Project ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ImportGroup Condition=" '$(ExcludeRestorePackageImports)' != 'true' ">
-    <Import Project="$(NuGetPackageRoot)selenium.webdriver\4.19.0\buildTransitive\Selenium.WebDriver.targets" Condition="Exists('$(NuGetPackageRoot)selenium.webdriver\4.19.0\buildTransitive\Selenium.WebDriver.targets')" />
-    <Import Project="$(NuGetPackageRoot)selenium.webdriver.chromedriver\124.0.6367.6000\build\Selenium.WebDriver.ChromeDriver.targets" Condition="Exists('$(NuGetPackageRoot)selenium.webdriver.chromedriver\124.0.6367.6000\build\Selenium.WebDriver.ChromeDriver.targets')" />
-    <Import Project="$(NuGetPackageRoot)selenium.firefox.webdriver\0.27.0\build\Selenium.Firefox.WebDriver.targets" Condition="Exists('$(NuGetPackageRoot)selenium.firefox.webdriver\0.27.0\build\Selenium.Firefox.WebDriver.targets')" />
+    <Import Project="$(NuGetPackageRoot)selenium.webdriver.chromedriver\136.0.7103.4900\build\Selenium.WebDriver.ChromeDriver.targets" Condition="Exists('$(NuGetPackageRoot)selenium.webdriver.chromedriver\136.0.7103.4900\build\Selenium.WebDriver.ChromeDriver.targets')" />
+    <Import Project="$(NuGetPackageRoot)selenium.webdriver\4.32.0\buildTransitive\Selenium.WebDriver.targets" Condition="Exists('$(NuGetPackageRoot)selenium.webdriver\4.32.0\buildTransitive\Selenium.WebDriver.targets')" />
   </ImportGroup>
 </Project>

@@ -15,8 +15,9 @@ namespace SoftwareProject.Controllers
 
         public IActionResult Dashboard()
         {
+            var role = HttpContext.Session.GetString("Role");
             var id = HttpContext.Session.GetString("TeacherId");
-            if (string.IsNullOrEmpty(id))
+            if (string.IsNullOrEmpty(id) || role != "Teacher")
                 return RedirectToAction("Login", "Login");
 
             ViewBag.TeacherId = id;
@@ -67,7 +68,8 @@ namespace SoftwareProject.Controllers
                     Description = data["description"].ToString(),
                     ProfessorEmail = data["professorEmail"].ToString(),
                     TotalSlots = Convert.ToInt32(data["totalSlots"]),
-                    Enrolled = ((List<object>)data["enrolled"]).Select(e => e.ToString()).ToList()
+                    Enrolled = ((List<object>)data["enrolled"]).Select(e => e.ToString()).ToList(),
+                    Status = data.ContainsKey("Status") ? data["Status"].ToString() : "Pending"
                 });
             }
 
@@ -88,6 +90,13 @@ namespace SoftwareProject.Controllers
 
             enrolled.Remove(studentId);
             await docRef.UpdateAsync(new Dictionary<string, object> { { "enrolled", enrolled } });
+
+            // Delete the student's results document
+            var resultsDocRef = db.Collection("evaluation-project")
+                .Document("Evaluation")
+                .Collection("results")
+                .Document(studentId);
+            await resultsDocRef.DeleteAsync();
 
             return RedirectToAction("ManageProjects");
         }
@@ -129,7 +138,7 @@ namespace SoftwareProject.Controllers
             return View();
         }
         [HttpPost]
-        public async Task<IActionResult> SubmitReview(string studentId, string professorEmail, string feedback)
+        public async Task<IActionResult> SubmitReview(string studentId, string professorEmail, string feedback, int marks)
         {
             var docRef = db.Collection("evaluation-project")
                            .Document("Evaluation")
@@ -139,12 +148,100 @@ namespace SoftwareProject.Controllers
             var update = new Dictionary<string, object>
     {
         { "text22", feedback },
-        { "prefossorEmail", professorEmail }
+        { "prefossorEmail", professorEmail },
+        { "totalGrateToPercent", marks }
     };
 
             await docRef.SetAsync(update, SetOptions.MergeAll);
             return RedirectToAction("ReviewProjects");
         }
 
+        [HttpPost]
+        public async Task<IActionResult> HandleStudentRequest(string projectId, string studentId, string action, string feedback = "")
+        {
+            var teacherEmail = HttpContext.Session.GetString("TeacherId");
+            if (string.IsNullOrEmpty(teacherEmail)) return RedirectToAction("Login", "Login");
+
+            var projectRef = db.Collection("evaluation-project").Document("ProjectList").Collection("Projects").Document(projectId);
+            var snapshot = await projectRef.GetSnapshotAsync();
+            
+            if (!snapshot.Exists) return NotFound();
+
+            var data = snapshot.ToDictionary();
+            if (data["professorEmail"].ToString() != teacherEmail)
+            {
+                TempData["Error"] = "You are not authorized to manage this project.";
+                return RedirectToAction("ManageProjects");
+            }
+
+            var requested = data.ContainsKey("requested") 
+                ? ((List<object>)data["requested"]).Select(x => x.ToString()).ToList() 
+                : new List<string>();
+
+            if (!requested.Contains(studentId))
+            {
+                TempData["Error"] = "Student request not found.";
+                return RedirectToAction("ManageProjects");
+            }
+
+            if (action.ToLower() == "approve")
+            {
+                var enrolled = data.ContainsKey("enrolled") 
+                    ? ((List<object>)data["enrolled"]).Select(x => x.ToString()).ToList() 
+                    : new List<string>();
+
+                if (enrolled.Count >= Convert.ToInt32(data["totalSlots"]))
+                {
+                    TempData["Error"] = "Project is full.";
+                    return RedirectToAction("ManageProjects");
+                }
+
+                enrolled.Add(studentId);
+                requested.Remove(studentId);
+
+                await projectRef.UpdateAsync(new Dictionary<string, object>
+                {
+                    { "enrolled", enrolled },
+                    { "requested", requested }
+                });
+
+                // Store feedback in a separate collection
+                await db.Collection("evaluation-project")
+                    .Document("Feedback")
+                    .Collection("ProjectFeedback")
+                    .AddAsync(new Dictionary<string, object>
+                    {
+                        { "projectId", projectId },
+                        { "studentId", studentId },
+                        { "teacherId", teacherEmail },
+                        { "feedback", feedback },
+                        { "timestamp", DateTime.UtcNow }
+                    });
+
+                TempData["Success"] = "Student approved successfully.";
+            }
+            else if (action.ToLower() == "reject")
+            {
+                requested.Remove(studentId);
+                await projectRef.UpdateAsync("requested", requested);
+
+                // Store rejection feedback
+                await db.Collection("evaluation-project")
+                    .Document("Feedback")
+                    .Collection("ProjectFeedback")
+                    .AddAsync(new Dictionary<string, object>
+                    {
+                        { "projectId", projectId },
+                        { "studentId", studentId },
+                        { "teacherId", teacherEmail },
+                        { "feedback", feedback },
+                        { "timestamp", DateTime.UtcNow }
+                    });
+
+                TempData["Success"] = "Student request rejected.";
+            }
+
+            return RedirectToAction("ManageProjects");
+        }
     }
 }

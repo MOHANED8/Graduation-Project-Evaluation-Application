@@ -1,0 +1,223 @@
+@using SoftwareProject.Models
+@{
+    ViewData["Title"] = "No Second Teacher Available";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var teachersWithAvailability = ViewBag.TeachersWithAvailability as List<TeacherAvailability>;
+}
+
+<div class="container mt-5 pt-4">
+    @if (ViewBag.NoOverlapMessage != null)
+    {
+        <div class="alert alert-warning">
+            <h4 class="alert-heading">No Overlapping Time</h4>
+            <p>No matching time found with @ViewBag.SecondTeacherName.</p>
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-warning">
+            <h4 class="alert-heading">No Second Teacher Available</h4>
+            <p>No common availability was found with a second teacher. Below is a list of teachers with the closest availability to consider.</p>
+        </div>
+    }
+
+    <!-- Warning Message (now under the yellow alert) -->
+    <div id="overlapWarning" class="alert alert-danger mt-2" style="display:none;">
+        <span id="overlapWarningText"></span>
+        <button type="button" class="btn btn-sm btn-outline-dark ms-2" onclick="hideOverlapWarning()">Dismiss</button>
+    </div>
+
+    @if (teachersWithAvailability != null && teachersWithAvailability.Any())
+    {
+        <div class="card mt-4">
+            <div class="card-header">
+                <h5>Available Times</h5>
+            </div>
+            <div class="card-body">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Available Time</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var teacher in teachersWithAvailability)
+                        {
+                            if (teacher.AllAvailableTimes != null && teacher.AllAvailableTimes.Any())
+                            {
+                                foreach (var slot in teacher.AllAvailableTimes)
+                                {
+                                    var parts = slot.Split('|');
+                                    <tr>
+                                        <td>@teacher.Name</td>
+                                        <td>@teacher.Email</td>
+                                        <td>
+                                            @if (parts.Length == 3)
+                                            {
+                                                @($"{parts[0]} ({parts[1]} - {parts[2]})")
+                                            }
+                                            else
+                                            {
+                                                @slot
+                                            }
+                                        </td>
+                                        <td>
+                                            <button class="btn btn-sm btn-outline-primary" onclick="showAddToCalendarModal('@parts[0]')">Add to My Calendar</button>
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                            else
+                            {
+                                <tr>
+                                    <td>@teacher.Name</td>
+                                    <td>@teacher.Email</td>
+                                    <td>No available times</td>
+                                    <td></td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="mt-4">
+            <p>You can:</p>
+            <ul>
+                <li>Adjust your availability to match with another teacher</li>
+                <li>Contact one of the available teachers to coordinate a time</li>
+                <li>Try scheduling for a different date</li>
+            </ul>
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-info mt-4">
+            No teachers with available dates found. Please try again later or contact the system administrator.
+        </div>
+    }
+
+    <div class="mt-4">
+        <a href="@Url.Action("Index", "PresentationSchedule")" class="btn btn-primary">Back to Schedule</a>
+    </div>
+</div>
+
+<!-- Modal for Add to Calendar -->
+<div class="modal fade" id="addToCalendarModal" tabindex="-1" aria-labelledby="addToCalendarModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="addToCalendarModalLabel">Add Availability for <span id="modalDate"></span></h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form id="addToCalendarForm">
+          <input type="hidden" id="modalDateValue" />
+          <div class="mb-3">
+            <label for="startTime" class="form-label">Start Time</label>
+            <input type="time" class="form-control" id="startTime" required />
+          </div>
+          <div class="mb-3">
+            <label for="endTime" class="form-label">End Time</label>
+            <input type="time" class="form-control" id="endTime" required />
+          </div>
+          <button type="submit" class="btn btn-success">Add Availability</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Success Toast -->
+<div id="successToast" class="toast align-items-center text-bg-success border-0 position-fixed bottom-0 end-0 m-4" role="alert" aria-live="assertive" aria-atomic="true" style="z-index: 9999; display:none;">
+  <div class="d-flex">
+    <div class="toast-body">
+      Availability added successfully!
+    </div>
+  </div>
+</div>
+
+@section Scripts {
+    <script>
+        let overlapWarning = document.getElementById('overlapWarning');
+        let successToast = document.getElementById('successToast');
+        let overlapTimeout = null;
+        let addToCalendarModalInstance = null;
+
+        // Show warning from localStorage on page load
+        window.addEventListener('DOMContentLoaded', function() {
+            const storedWarning = localStorage.getItem('calendarWarning');
+            if (storedWarning) {
+                overlapWarning.innerText = storedWarning;
+                overlapWarning.style.display = 'block';
+                if (overlapTimeout) clearTimeout(overlapTimeout);
+                overlapTimeout = setTimeout(() => {
+                    overlapWarning.style.display = 'none';
+                    localStorage.removeItem('calendarWarning');
+                }, 5000);
+            }
+        });
+
+        function showAddToCalendarModal(date) {
+            document.getElementById('modalDateValue').value = date;
+            document.getElementById('modalDate').innerText = date;
+            overlapWarning.style.display = 'none';
+            if (overlapTimeout) {
+                clearTimeout(overlapTimeout);
+                overlapTimeout = null;
+            }
+            addToCalendarModalInstance = new bootstrap.Modal(document.getElementById('addToCalendarModal'));
+            addToCalendarModalInstance.show();
+        }
+
+        function showOverlapWarning(message) {
+            overlapWarning.innerText = message;
+            overlapWarning.style.display = 'block';
+            if (overlapTimeout) clearTimeout(overlapTimeout);
+            overlapTimeout = setTimeout(() => {
+                overlapWarning.style.display = 'none';
+            }, 5000);
+        }
+
+        document.getElementById('addToCalendarForm').addEventListener('submit', async function (e) {
+            e.preventDefault();
+            const date = document.getElementById('modalDateValue').value;
+            const startTime = document.getElementById('startTime').value;
+            const endTime = document.getElementById('endTime').value;
+            if (!startTime || !endTime || startTime >= endTime) {
+                showOverlapWarning('Please enter a valid time range.');
+                return;
+            }
+            // Send to backend
+            const res = await fetch('/Calendar/AddAvailability', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ date, startTime, endTime })
+            });
+            if (res.ok) {
+                const json = await res.json();
+                if (json.match === false) {
+                    // Store warning in localStorage and reload
+                    localStorage.setItem('calendarWarning', "Time range doesn't match with second teacher");
+                    location.reload();
+                } else {
+                    overlapWarning.style.display = 'none';
+                    // Hide the modal
+                    if (addToCalendarModalInstance) addToCalendarModalInstance.hide();
+                    // Show toast and reload after 2s
+                    successToast.style.display = 'block';
+                    setTimeout(() => {
+                        successToast.style.display = 'none';
+                        location.reload();
+                    }, 2000);
+                }
+            } else {
+                showOverlapWarning('Failed to add availability.');
+            }
+        });
+    </script>
+} 

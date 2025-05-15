@@ -1,0 +1,132 @@
+@{
+    ViewData["Title"] = "Activity Log";
+    var logs = ViewBag.Logs as IEnumerable<dynamic>;
+    var today = DateTime.Today;
+    var todaysLogs = logs?.Where(l => l.Timestamp != null && ((DateTime)l.Timestamp).Date == today).ToList() ?? new List<dynamic>();
+}
+
+<style>
+    .activity-log-table {
+        width: 100%;
+        table-layout: fixed;
+        background: #f8fbff;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    }
+    .activity-log-table th,
+    .activity-log-table td {
+        padding: 14px 10px;
+        vertical-align: top;
+        font-size: 1rem;
+    }
+    .activity-log-table th {
+        background: #e3f6fd;
+        color: #222;
+        font-weight: 600;
+        border-bottom: 2px solid #b6e0fe;
+    }
+    .activity-log-table tbody tr {
+        transition: background 0.2s;
+    }
+    .activity-log-table tbody tr:hover {
+        background: #eaf6ff;
+    }
+    .activity-log-table th.admin-col,
+    .activity-log-table td.admin-col {
+        width: 80px;
+        min-width: 60px;
+    }
+    .activity-log-table th.action-col,
+    .activity-log-table td.action-col {
+        width: 180px;
+        min-width: 130px;
+    }
+    .activity-log-table th.details-col,
+    .activity-log-table td.details-col {
+        width: 48%;
+        min-width: 200px;
+    }
+    .activity-log-table th.timestamp-col,
+    .activity-log-table td.timestamp-col {
+        width: 180px;
+        text-align: center;
+    }
+    .log-details-box {
+        background: #f1f3f6;
+        border-radius: 8px;
+        padding: 10px 16px;
+        color: #333;
+        font-size: 1.05em;
+        line-height: 1.6;
+        margin: 0;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+        word-break: break-word;
+        white-space: pre-line;
+        max-width: 95%;
+        margin-left: auto;
+        margin-right: auto;
+    }
+    .badge.bg-primary {
+        font-size: 0.95em;
+        padding: 6px 14px;
+        border-radius: 20px;
+        font-weight: 500;
+    }
+    .badge.bg-success {
+        font-size: 0.95em;
+        padding: 6px 14px;
+        border-radius: 20px;
+        font-weight: 500;
+    }
+    .admin-col, .action-col, .timestamp-col {
+        text-align: center;
+    }
+</style>
+
+<div class="container mt-4">
+    <h2 class="mb-3">Admin Activity Log</h2>
+    <div class="alert alert-info mb-3"><strong>Today's Total Logs:</strong> @todaysLogs.Count</div>
+    <div class="card">
+        <div class="card-header" style="background-color: #00bfff; color: white;"><strong>Recent Actions</strong></div>
+        <div class="card-body p-0">
+            <table class="activity-log-table table table-bordered mb-0">
+                <thead style="background-color: #e3f6fd;">
+                    <tr>
+                        <th class="admin-col">Admin</th>
+                        <th class="action-col">Action</th>
+                        <th class="details-col">Details</th>
+                        <th class="timestamp-col">Timestamp</th>
+                    </tr>
+                </thead>
+                <tbody>
+                @foreach (var log in logs)
+                {
+                    <tr>
+                        <td class="admin-col">@log.Admin</td>
+                        <td class="action-col">
+                            <span class="badge bg-primary">
+                                <i class="bi bi-arrow-repeat"></i>
+                                @log.Action
+                            </span>
+                        </td>
+                        <td class="details-col">
+                            <div class="log-details-box">
+                                @{
+                                    var details = log.Details?.ToString().Split(new[] { ". " }, StringSplitOptions.None) ?? new string[0];
+                                    foreach (var part in details)
+                                    {
+                                        @part.Trim()
+                                        <br />
+                                    }
+                                }
+                            </div>
+                        </td>
+                        <td class="timestamp-col"><span class="badge bg-success">@((log.Timestamp as DateTime?)?.ToString("yyyy-MM-dd HH:mm:ss") ?? "-")</span></td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div> 

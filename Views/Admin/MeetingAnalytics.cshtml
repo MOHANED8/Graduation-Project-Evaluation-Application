@@ -1,0 +1,52 @@
+@{
+    ViewData["Title"] = "Meeting Analytics";
+    var totalMeetings = ViewBag.TotalMeetings as int? ?? 0;
+    var mostActive = ViewBag.MostActive as List<KeyValuePair<string, int>> ?? new List<KeyValuePair<string, int>>();
+}
+
+<div class="container mt-5 pt-4">
+    <h2 class="mb-4">Meeting Analytics</h2>
+
+    <div class="d-flex justify-content-end mb-3">
+        <a class="btn btn-success" href="@Url.Action("ExportMeetingsToICS", "Admin")">
+            <i class="fa fa-calendar"></i> Export to Calendar
+        </a>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="card text-white bg-primary mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">Total Meetings</h5>
+                    <h2 class="card-text">@totalMeetings</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-8">
+            <div class="card mb-3">
+                <div class="card-header">
+                    <h5 class="mb-0">Most Active Users (Professors/Students)</h5>
+                </div>
+                <div class="card-body">
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>User Email</th>
+                                <th>Meetings Attended</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var entry in mostActive)
+                            {
+                                <tr>
+                                    <td>@entry.Key</td>
+                                    <td>@entry.Value</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div> 

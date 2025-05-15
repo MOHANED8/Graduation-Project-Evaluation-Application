@@ -1,57 +1,89 @@
 ﻿@{
     ViewData["Title"] = "Schedule Result";
     Layout = "~/Views/Shared/_Layout.cshtml";
-    var studentList = ViewBag.EnrolledStudents as List<string>;
+    var primaryTeacher = ViewBag.PrimaryTeacherInfo as IDictionary<string, string>;
+    var secondaryTeacher = ViewBag.SecondaryTeacherInfo as IDictionary<string, string>;
+    var studentsInfo = ViewBag.EnrolledStudentsInfo as List<IDictionary<string, string>>;
+    var enrolledStudents = ViewBag.EnrolledStudents as List<string>;
     var noMatch = ViewBag.NoMatch as bool? ?? false;
+    var mailToLink = ViewBag.MailToLink as string;
 }
 
 <div class="container mt-5 pt-4">
-    <h2>Presentation Scheduled</h2>
-    <p><strong>Project:</strong> @ViewBag.ProjectTitle</p>
-    <p><strong>Professor ID:</strong> @ViewBag.ProfessorId</p>
+    <div class="alert alert-success">
+        <h4 class="alert-heading">Presentation Successfully Scheduled!</h4>
+        <p>The presentation has been scheduled with two evaluators.</p>
+    </div>
 
-    @if (ViewBag.ScheduledDate != null)
-    {
-        <p><strong>Scheduled Date:</strong> <span class="badge bg-success">@ViewBag.ScheduledDate</span></p>
-    }
-
-    <h4>Enrolled Students:</h4>
-    <ul>
-        @foreach (var s in studentList)
-        {
-            <li>@s</li>
-        }
-    </ul>
-
-    @if (noMatch)
-    {
-        <div class="alert alert-warning mt-3">
-            ❌ No match date with the student. Click the button below to send mail.
+    <div class="card mt-4">
+        <div class="card-header">
+            <h5>Presentation Details</h5>
         </div>
+        <div class="card-body">
+            <p><strong>Project:</strong> @ViewBag.ProjectTitle</p>
+            <p><strong>Scheduled Date:</strong> <span class="badge bg-success">@ViewBag.ScheduledDate</span></p>
+            
+            <h6 class="mt-4">Evaluators:</h6>
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Role</th>
+                        <th>Name</th>
+                        <th>Teacher Id</th>
+                        <th>Email</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Primary Evaluator</strong></td>
+                        <td>@primaryTeacher?["Name"]</td>
+                        <td>@primaryTeacher?["Id"]</td>
+                        <td>@primaryTeacher?["Email"]</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Secondary Evaluator</strong></td>
+                        <td>@secondaryTeacher?["Name"]</td>
+                        <td>@secondaryTeacher?["Id"]</td>
+                        <td>@secondaryTeacher?["Email"]</td>
+                    </tr>
+                </tbody>
+            </table>
 
-        @if (studentList != null && studentList.Count > 0)
+            <h6 class="mt-4">Enrolled Students:</h6>
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Student Id</th>
+                        <th>Email</th>
+                    </tr>
+                </thead>
+                <tbody>
+                @if (enrolledStudents != null && enrolledStudents.Count > 0)
+                {
+                    foreach (var studentId in enrolledStudents)
+                    {
+                        var email = $"{studentId}@stu.iku.edu.tr";
+                        <tr>
+                            <td>@studentId</td>
+                            <td>@email</td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr><td colspan="2" class="text-center">No enrolled students.</td></tr>
+                }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="mt-4 d-flex gap-2">
+        <a href="@Url.Action("Index", "PresentationSchedule")" class="btn btn-primary">Back to Schedule</a>
+        @if (!string.IsNullOrEmpty(mailToLink))
         {
-            var studentEmail = $"{studentList[0]}@stu.iku.edu.tr";
-            var subject = "Entry Available date for the project presentation";
-            var availableDates = ViewBag.TeacherDates as List<string>;
-            var teacherFullName = ViewBag.TeacherName as string ?? "";
-
-            var body = "Dear Student,%0D%0A%0D%0A" +
-            "Please select the available date on your portal for the project presentation:%0D%0A";
-
-            foreach (var date in availableDates)
-            {
-                body += $"- {date}%0D%0A";
-            }
-
-            body += "%0D%0ABest wishes,%0D%0A" + teacherFullName;
-
-            <a class="btn btn-danger mb-3"
-               href="mailto:@studentEmail?subject=@Uri.EscapeDataString(subject)&body=@body">
-                Send Mail
-            </a>
+            <a href="@mailToLink" class="btn btn-outline-primary" target="_blank">Send Mail</a>
         }
-    }
-
-    <a href="@Url.Action("Index", "PresentationSchedule")" class="btn btn-secondary">← Back to Schedule</a>
+    </div>
 </div>
+

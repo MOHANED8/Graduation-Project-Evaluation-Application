@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "D:\\IKU\\Software Engineering\\Lab\\SoftwareProjectson\\SoftwareProject\\SoftwareProject.csproj": {}
+    "D:\\IKU\\Software Engineering\\Lab\\final version\\SoftwareProject\\SoftwareProject\\SoftwareProject.csproj": {}
   },
   "projects": {
-    "D:\\IKU\\Software Engineering\\Lab\\SoftwareProjectson\\SoftwareProject\\SoftwareProject.csproj": {
+    "D:\\IKU\\Software Engineering\\Lab\\final version\\SoftwareProject\\SoftwareProject\\SoftwareProject.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\IKU\\Software Engineering\\Lab\\SoftwareProjectson\\SoftwareProject\\SoftwareProject.csproj",
+        "projectUniqueName": "D:\\IKU\\Software Engineering\\Lab\\final version\\SoftwareProject\\SoftwareProject\\SoftwareProject.csproj",
         "projectName": "SoftwareProject",
-        "projectPath": "D:\\IKU\\Software Engineering\\Lab\\SoftwareProjectson\\SoftwareProject\\SoftwareProject.csproj",
+        "projectPath": "D:\\IKU\\Software Engineering\\Lab\\final version\\SoftwareProject\\SoftwareProject\\SoftwareProject.csproj",
         "packagesPath": "C:\\Users\\who_cares\\.nuget\\packages\\",
-        "outputPath": "D:\\IKU\\Software Engineering\\Lab\\SoftwareProjectson\\SoftwareProject\\obj\\",
+        "outputPath": "D:\\IKU\\Software Engineering\\Lab\\final version\\SoftwareProject\\SoftwareProject\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -51,61 +51,37 @@
         "net8.0": {
           "targetAlias": "net8.0",
           "dependencies": {
-            "DotNetSeleniumExtras.WaitHelpers": {
-              "target": "Package",
-              "version": "[3.11.0, )"
-            },
-            "FireSharp": {
-              "target": "Package",
-              "version": "[2.0.4, )"
-            },
-            "FireSharp.Serialization.JsonNet": {
-              "target": "Package",
-              "version": "[1.1.0, )"
-            },
             "FirebaseAdmin": {
               "target": "Package",
-              "version": "[2.4.1, )"
-            },
-            "FirebaseDatabase.net": {
-              "target": "Package",
-              "version": "[4.2.0, )"
-            },
-            "FirebaseStorage.net": {
-              "target": "Package",
-              "version": "[1.0.3, )"
+              "version": "[2.4.0, )"
             },
             "Google.Cloud.Firestore": {
               "target": "Package",
-              "version": "[3.6.0, )"
+              "version": "[3.7.0, )"
             },
             "Google.Cloud.Firestore.V1": {
               "target": "Package",
-              "version": "[3.6.0, )"
+              "version": "[3.7.0, )"
             },
             "Google.Cloud.Storage.V1": {
               "target": "Package",
-              "version": "[4.10.0, )"
+              "version": "[4.13.0, )"
             },
-            "Selenium.Firefox.WebDriver": {
+            "Microsoft.AspNetCore.Session": {
               "target": "Package",
-              "version": "[0.27.0, )"
+              "version": "[2.2.0, )"
             },
-            "Selenium.Support": {
+            "Newtonsoft.Json": {
               "target": "Package",
-              "version": "[4.19.0, )"
+              "version": "[13.0.3, )"
             },
             "Selenium.WebDriver": {
               "target": "Package",
-              "version": "[4.19.0, )"
+              "version": "[4.32.0, )"
             },
             "Selenium.WebDriver.ChromeDriver": {
               "target": "Package",
-              "version": "[124.0.6367.6000, )"
-            },
-            "Selenium.WebDriverBackedSelenium": {
-              "target": "Package",
-              "version": "[4.1.0, )"
+              "version": "[136.0.7103.4900, )"
             }
           },
           "imports": [

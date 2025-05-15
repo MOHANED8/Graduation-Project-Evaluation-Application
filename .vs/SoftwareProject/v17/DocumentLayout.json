@@ -1,0 +1,136 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "D:\\IKU\\Software Engineering\\Lab\\final version\\SoftwareProject\\SoftwareProject\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{5035A248-86A9-3A9D-701A-7149B0A4F40D}|SoftwareProject.csproj|d:\\iku\\software engineering\\lab\\final version\\softwareproject\\softwareproject\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5035A248-86A9-3A9D-701A-7149B0A4F40D}|SoftwareProject.csproj|solutionrelative:program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5035A248-86A9-3A9D-701A-7149B0A4F40D}|SoftwareProject.csproj|d:\\iku\\software engineering\\lab\\final version\\softwareproject\\softwareproject\\views\\home\\results.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{5035A248-86A9-3A9D-701A-7149B0A4F40D}|SoftwareProject.csproj|solutionrelative:views\\home\\results.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5035A248-86A9-3A9D-701A-7149B0A4F40D}|SoftwareProject.csproj|d:\\iku\\software engineering\\lab\\final version\\softwareproject\\softwareproject\\views\\admin\\teachercontrol.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{5035A248-86A9-3A9D-701A-7149B0A4F40D}|SoftwareProject.csproj|solutionrelative:views\\admin\\teachercontrol.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5035A248-86A9-3A9D-701A-7149B0A4F40D}|SoftwareProject.csproj|d:\\iku\\software engineering\\lab\\final version\\softwareproject\\softwareproject\\views\\home\\file.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{5035A248-86A9-3A9D-701A-7149B0A4F40D}|SoftwareProject.csproj|solutionrelative:views\\home\\file.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5035A248-86A9-3A9D-701A-7149B0A4F40D}|SoftwareProject.csproj|d:\\iku\\software engineering\\lab\\final version\\softwareproject\\softwareproject\\views\\home\\myproject.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{5035A248-86A9-3A9D-701A-7149B0A4F40D}|SoftwareProject.csproj|solutionrelative:views\\home\\myproject.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5035A248-86A9-3A9D-701A-7149B0A4F40D}|SoftwareProject.csproj|d:\\iku\\software engineering\\lab\\final version\\softwareproject\\softwareproject\\views\\admin\\activitylog.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{5035A248-86A9-3A9D-701A-7149B0A4F40D}|SoftwareProject.csproj|solutionrelative:views\\admin\\activitylog.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5035A248-86A9-3A9D-701A-7149B0A4F40D}|SoftwareProject.csproj|d:\\iku\\software engineering\\lab\\final version\\softwareproject\\softwareproject\\views\\admin\\dashboard.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{5035A248-86A9-3A9D-701A-7149B0A4F40D}|SoftwareProject.csproj|solutionrelative:views\\admin\\dashboard.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 5,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "File.cshtml",
+              "DocumentMoniker": "D:\\IKU\\Software Engineering\\Lab\\final version\\SoftwareProject\\SoftwareProject\\Views\\Home\\File.cshtml",
+              "RelativeDocumentMoniker": "Views\\Home\\File.cshtml",
+              "ToolTip": "D:\\IKU\\Software Engineering\\Lab\\final version\\SoftwareProject\\SoftwareProject\\Views\\Home\\File.cshtml",
+              "RelativeToolTip": "Views\\Home\\File.cshtml",
+              "ViewState": "AgIAADEAAAAAAAAAAAAmwD0AAAAYAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-05-11T05:26:00.054Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "Results.cshtml",
+              "DocumentMoniker": "D:\\IKU\\Software Engineering\\Lab\\final version\\SoftwareProject\\SoftwareProject\\Views\\Home\\Results.cshtml",
+              "RelativeDocumentMoniker": "Views\\Home\\Results.cshtml",
+              "ToolTip": "D:\\IKU\\Software Engineering\\Lab\\final version\\SoftwareProject\\SoftwareProject\\Views\\Home\\Results.cshtml",
+              "RelativeToolTip": "Views\\Home\\Results.cshtml",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABIAAAAWAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-05-11T05:05:39.024Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "MyProject.cshtml",
+              "DocumentMoniker": "D:\\IKU\\Software Engineering\\Lab\\final version\\SoftwareProject\\SoftwareProject\\Views\\Home\\MyProject.cshtml",
+              "RelativeDocumentMoniker": "Views\\Home\\MyProject.cshtml",
+              "ToolTip": "D:\\IKU\\Software Engineering\\Lab\\final version\\SoftwareProject\\SoftwareProject\\Views\\Home\\MyProject.cshtml",
+              "RelativeToolTip": "Views\\Home\\MyProject.cshtml",
+              "ViewState": "AgIAABEAAAAAAAAAAAAAABsAAAAXAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-05-11T04:59:02.174Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "ActivityLog.cshtml",
+              "DocumentMoniker": "D:\\IKU\\Software Engineering\\Lab\\final version\\SoftwareProject\\SoftwareProject\\Views\\Admin\\ActivityLog.cshtml",
+              "RelativeDocumentMoniker": "Views\\Admin\\ActivityLog.cshtml",
+              "ToolTip": "D:\\IKU\\Software Engineering\\Lab\\final version\\SoftwareProject\\SoftwareProject\\Views\\Admin\\ActivityLog.cshtml",
+              "RelativeToolTip": "Views\\Admin\\ActivityLog.cshtml",
+              "ViewState": "AgIAABgAAAAAAAAAAAAAACoAAAAVAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-05-11T04:09:30.538Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "TeacherControl.cshtml",
+              "DocumentMoniker": "D:\\IKU\\Software Engineering\\Lab\\final version\\SoftwareProject\\SoftwareProject\\Views\\Admin\\TeacherControl.cshtml",
+              "RelativeDocumentMoniker": "Views\\Admin\\TeacherControl.cshtml",
+              "ToolTip": "D:\\IKU\\Software Engineering\\Lab\\final version\\SoftwareProject\\SoftwareProject\\Views\\Admin\\TeacherControl.cshtml",
+              "RelativeToolTip": "Views\\Admin\\TeacherControl.cshtml",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABgAAAAFAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-05-10T19:48:06.106Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "Program.cs",
+              "DocumentMoniker": "D:\\IKU\\Software Engineering\\Lab\\final version\\SoftwareProject\\SoftwareProject\\Program.cs",
+              "RelativeDocumentMoniker": "Program.cs",
+              "ToolTip": "D:\\IKU\\Software Engineering\\Lab\\final version\\SoftwareProject\\SoftwareProject\\Program.cs",
+              "RelativeToolTip": "Program.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-05-10T18:19:13.448Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "Dashboard.cshtml",
+              "DocumentMoniker": "D:\\IKU\\Software Engineering\\Lab\\final version\\SoftwareProject\\SoftwareProject\\Views\\Admin\\Dashboard.cshtml",
+              "RelativeDocumentMoniker": "Views\\Admin\\Dashboard.cshtml",
+              "ToolTip": "D:\\IKU\\Software Engineering\\Lab\\final version\\SoftwareProject\\SoftwareProject\\Views\\Admin\\Dashboard.cshtml",
+              "RelativeToolTip": "Views\\Admin\\Dashboard.cshtml",
+              "ViewState": "AgIAACgAAAAAAAAAAAAAAC4AAAAeAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-05-10T17:57:33.171Z"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

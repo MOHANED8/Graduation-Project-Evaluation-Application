@@ -16,12 +16,29 @@
                     <th>Project Title</th>
                     <th>Description</th>
                     <th>Enrolled Students</th>
+                    <th>Select Secondary Teacher</th>
+                    <th>Status</th>
                     <th>Action</th>
                 </tr>
             </thead>
             <tbody>
                 @foreach (var project in Model)
                 {
+                    string formatted = "";
+                    string meetingStatus = !string.IsNullOrEmpty(project.Status) ? project.Status : (!string.IsNullOrEmpty(project.ScheduledDate) ? "Scheduled" : "");
+                    string badgeClass = meetingStatus switch
+                    {
+                        "Scheduled" => "bg-success",
+                        "Completed" => "bg-secondary",
+                        "Cancelled" => "bg-danger",
+                        "On Hold" => "bg-warning",
+                        _ => "bg-info"
+                    };
+                    if (!string.IsNullOrEmpty(project.ScheduledDate) && project.ScheduledDate.Split('|').Length == 3)
+                    {
+                        var parts = project.ScheduledDate.Split('|');
+                        formatted = $"{parts[0]} ({parts[1]} - {parts[2]})";
+                    }
                     <tr>
                         <td>@project.ProjectTitle</td>
                         <td>@project.Description</td>
@@ -41,7 +58,43 @@
                             }
                         </td>
                         <td>
-                            <a href="@Url.Action("Schedule", "PresentationSchedule", new { projectId = project.ProjectId })" class="btn btn-primary">Schedule</a>
+                            @if (!project.IsScheduled)
+                            {
+                                <button class="btn btn-outline-primary btn-sm" onclick="openTeacherModal('@project.ProjectId')">Select Teacher</button>
+                                <span id="selectedTeacher-@project.ProjectId" class="text-success ms-2"></span>
+                                <input type="hidden" name="secondTeacherId" id="secondTeacherId-@project.ProjectId" />
+                            }
+                            else
+                            {
+                                <div>
+                                    <strong>@project.SecondaryTeacherName</strong><br />
+                                    <small class="text-muted">@project.SecondaryTeacherEmail</small>
+                                </div>
+                            }
+                        </td>
+                        <td>
+                            @if (string.IsNullOrEmpty(project.Status) || project.Status == "Scheduled")
+                            {
+                                <span class="badge @badgeClass">@formatted</span>
+                            }
+                            else
+                            {
+                                <span class="badge @badgeClass">@project.Status</span>
+                            }
+                        </td>
+                        <td>
+                            @if (!project.IsScheduled)
+                            {
+                                <form id="scheduleForm-@project.ProjectId" method="get" action="@Url.Action("Schedule", "PresentationSchedule")" class="mt-2">
+                                    <input type="hidden" name="projectId" value="@project.ProjectId" />
+                                    <input type="hidden" name="secondTeacherId" id="secondTeacherId-hidden-@project.ProjectId" />
+                                    <button type="submit" class="btn btn-primary" disabled id="scheduleBtn-@project.ProjectId">Schedule</button>
+                                </form>
+                            }
+                            else
+                            {
+                                <button class="btn btn-secondary" disabled>Scheduled</button>
+                            }
                         </td>
                     </tr>
                 }
@@ -53,3 +106,49 @@
         <div class="alert alert-info">No projects found.</div>
     }
 </div>
+
+<!-- Modal for selecting second teacher -->
+<div class="modal fade" id="teacherModal" tabindex="-1" aria-labelledby="teacherModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="teacherModalLabel">Select Second Teacher</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="list-group">
+                    @foreach (var teacher in ViewBag.AllTeachers)
+                    {
+                        <button type="button" class="list-group-item list-group-item-action" onclick="selectTeacher('@teacher.Id', '@teacher.Name', '@teacher.Email')">
+                            @teacher.Name
+                            <br />
+                            <small class="text-muted">@teacher.Email</small>
+                        </button>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        let currentProjectId = null;
+
+        function openTeacherModal(projectId) {
+            currentProjectId = projectId;
+            $('#teacherModal').modal('show');
+        }
+
+        function selectTeacher(teacherId, teacherName, teacherEmail) {
+            if (currentProjectId) {
+                document.getElementById('secondTeacherId-' + currentProjectId).value = teacherId;
+                document.getElementById('selectedTeacher-' + currentProjectId).textContent = teacherName;
+                document.getElementById('scheduleBtn-' + currentProjectId).disabled = false;
+                // Also set the hidden input for the form
+                document.getElementById('secondTeacherId-hidden-' + currentProjectId).value = teacherId;
+                $('#teacherModal').modal('hide');
+            }
+        }
+    </script>
+}
